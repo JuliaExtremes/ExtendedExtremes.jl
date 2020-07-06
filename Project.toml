@@ -1,0 +1,4 @@
+name = "EGPD"
+uuid = "c3d6fec6-66cc-479b-b3f2-8ef84979700f"
+authors = ["Gabriel <gabriel.gobeil199@gmail.com>"]
+version = "0.1.0"
