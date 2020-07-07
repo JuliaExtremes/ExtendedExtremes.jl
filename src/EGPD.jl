@@ -3,14 +3,27 @@ module EGPD
 using CSV, Distributions, Extremes, Optim
 import Distributions: cdf, sampler
 import Random: AbstractRNG
-import Base: rand
+import Base: maximum, minimum, rand
 
 export
     # distribution types
-    EGPpower
-    #EGPpowermix
-    #EGPbeta
-    #EGPbetapower
+    EGPpower,
+    EGPpowermix,
+    EGPbeta,
+    EGPbetapower,
+
+    # methods
+    cdf,         # cumulative distribution function
+    insupport,   # predicate, is x in the support of the distribution?
+    logpdf,      # log probability density
+    logcdf,      # cdf returning log-probability
+    params,      # get the tuple of parameters
+    partype,
+    pdf,         # probability density function
+    quantile,    # inverse of cdf (defined for p in (0,1))
+    rand,
+    sampler      # create a Sampler object for efficient samples
+
 
 ### source files
 
