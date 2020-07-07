@@ -5,6 +5,15 @@ import Distributions: cdf, sampler
 import Random: AbstractRNG
 import Base: maximum, minimum, rand
 
+include("parameterestimation.jl")
+include("utils.jl")
+
+# distributions
+include("distributions/naveau2016_type1.jl");
+include("distributions/naveau2016_type2.jl");
+include("distributions/naveau2016_type3.jl");
+include("distributions/naveau2016_type4.jl");
+
 export
     # distribution types
     EGPpower,
@@ -22,18 +31,11 @@ export
     pdf,         # probability density function
     quantile,    # inverse of cdf (defined for p in (0,1))
     rand,
-    sampler      # create a Sampler object for efficient samples
+    sampler,      # create a Sampler object for efficient samples
 
-
-### source files
-
-# implementation helpers
-include("utils.jl")
-
-# distributions
-include("distributions/naveau2016_type1.jl");
-include("distributions/naveau2016_type2.jl");
-include("distributions/naveau2016_type3.jl");
-include("distributions/naveau2016_type4.jl");
+    EGPpowerfit,
+    EGPpowermixfit,
+    EGPbetafit,
+    EGPbetapowerfit
 
 end # module
