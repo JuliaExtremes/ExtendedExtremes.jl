@@ -1,18 +1,3 @@
-using Distributions
-import Distributions: cdf, sampler
-import Random: AbstractRNG
-import Base: rand
-
-# macro for argument checking (récupéré de Distributions.jl)
-macro check_args(D, cond)
-    quote
-        if !($(esc(cond)))
-            throw(ArgumentError(string(
-                $(string(D)), ": the condition ", $(string(cond)), " is not satisfied.")))
-        end
-    end
-end
-
 struct EGPbeta{T<:Real} <: ContinuousUnivariateDistribution
     σ::T    # scale parameter
     ξ::T    # shape parameter
