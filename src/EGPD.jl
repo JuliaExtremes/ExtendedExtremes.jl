@@ -30,10 +30,10 @@ export
 # implementation helpers
 include("utils.jl")
 
-# distribution
-include("naveau2016_type1.jl");
-include("naveau2016_type2.jl");
-include("naveau2016_type3.jl");
-include("naveau2016_type4.jl");
+# distributions
+include("distributions/naveau2016_type1.jl");
+include("distributions/naveau2016_type2.jl");
+include("distributions/naveau2016_type3.jl");
+include("distributions/naveau2016_type4.jl");
 
 end # module
