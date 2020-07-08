@@ -1,3 +1,20 @@
+"""
+    EGPpowermix(σ, ξ, κ₁, κ₂, p)
+
+*EGPpowermix* corresponds to the second extended GP model of Naveau et al. (2016), which is a mixture of power laws with G(v) = pv^κ₁ + (1-p)v^κ₂.
+
+It is a five parameters family: κ₁ controls the lower tail behavior, κ₂ modifies the shape of the density in its central part, σ is a scale parameter, and ξ is a shape parameter.
+
+```julia
+EGPpowermix(σ, ξ, κ₁, κ₂, p)   # EGP of Naveau et al. (2016) (type 2) with parameters σ, ξ, κ₁, κ₂, p.
+
+params(d)           # Get the parameters, i.e. (σ, ξ, κ₁, κ₂, p)
+```
+
+Reference :
+
+* Naveau, P., Huser, R., Ribereau, P., and Hannart, A. ( 2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
+"""
 struct EGPpowermix{T<:Real} <: ContinuousUnivariateDistribution
     σ::T    # scale parameter
     ξ::T    # rate of upper tail decay

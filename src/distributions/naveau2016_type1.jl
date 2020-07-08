@@ -1,13 +1,19 @@
 """
-    EGPpower(σ, ξ, κ)   (Nom provisoire pour la première famille)
+    EGPpower(σ, ξ, κ)
 
-Model (i), with the power law distribution G (v ) = vκ , is clearly the simplest choice and leads to a model in (6) with  three parameters: κ controls the shape of the lower tail, σ is a scale parameter, and ξ controls the rate of upper tail decay.
+*EGPpower* corresponds to the first extended GP model of Naveau et al. (2016), with the power law distribution G(v) = v^κ.
+
+It is a three parameters family: κ controls the shape of the lower tail, σ is a scale parameter, and ξ controls the rate of upper tail decay.
 
 ```julia
-EGPpower(σ, ξ, κ)   # Extended Generalized Pareto of Naveau (type 1) with scale parameter σ, rate of upper tail decay ξ and shape of the lower tail κ.
+EGPpower(σ, ξ, κ)   # EGP of Naveau et al. (2016) (type 1) with scale parameter σ, rate of upper tail decay ξ and shape of the lower tail κ.
+
+params(d)           # Get the parameters, i.e. (σ, ξ, κ)
 ```
 
-Naveau, P., Huser, R., Ribereau, P., and Hannart, A. ( 2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
+Reference :
+
+* Naveau, P., Huser, R., Ribereau, P., and Hannart, A. ( 2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
 """
 struct EGPpower{T<:Real} <: ContinuousUnivariateDistribution
     σ::T    # scale parameter

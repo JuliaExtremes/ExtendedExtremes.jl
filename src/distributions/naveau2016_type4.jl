@@ -1,3 +1,20 @@
+"""
+    EGPbetapower(σ, ξ, δ)
+
+*EGPbetapower* corresponds to the fourth extended GP model of Naveau et al. (2016).
+
+It is a four parameters family: δ is a threshold tuning parameter, κ is a parameter that controls the lower tail behavior, σ is a scale parameter, and ξ is a shape parameter.
+
+```julia
+EGPbetapower(σ, ξ, δ, κ)   # EGP of Naveau et al. (2016) (type 4) with parameters σ, ξ, δ, κ.
+
+params(d)           # Get the parameters, i.e. (σ, ξ, δ, κ)
+```
+
+Reference :
+
+* Naveau, P., Huser, R., Ribereau, P., and Hannart, A. ( 2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
+"""
 struct EGPbetapower{T<:Real} <: ContinuousUnivariateDistribution
     σ::T    # scale parameter
     ξ::T    # shape parameter
