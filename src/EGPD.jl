@@ -1,7 +1,7 @@
 module EGPD
 
 using CSV, Distributions, Extremes, Optim
-import Distributions: cdf, sampler
+import Distributions: cdf, params, pdf, sampler
 import Random: AbstractRNG
 import Base: maximum, minimum, rand
 
