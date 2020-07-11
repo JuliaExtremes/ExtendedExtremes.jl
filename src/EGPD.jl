@@ -1,7 +1,7 @@
 module EGPD
 
 using CSV, Distributions, Extremes, Optim
-import Distributions: cdf, params, pdf, sampler
+import Distributions: cdf, insupport, logcdf, logpdf, params, partype, pdf, quantile, sampler
 import Random: AbstractRNG
 import Base: maximum, minimum, rand
 
@@ -26,6 +26,8 @@ export
     insupport,   # predicate, is x in the support of the distribution?
     logpdf,      # log probability density
     logcdf,      # cdf returning log-probability
+    maximum,
+    minimum,
     params,      # get the tuple of parameters
     partype,
     pdf,         # probability density function
