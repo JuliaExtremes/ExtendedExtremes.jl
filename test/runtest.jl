@@ -8,4 +8,5 @@ Random.seed!(12)
     include("reproducingNaveauResults.jl")
     include("EGPpower.jl")
     include("EGPbeta.jl")
+    include("EGPbetapower.jl")
 end;
