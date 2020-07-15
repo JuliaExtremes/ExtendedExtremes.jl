@@ -17,4 +17,7 @@
     @test params(model) == (σ, ξ, κ)
 
     @test partype(model) == Float64
+
+    @test_throws AssertionError quantile(model, 0)
+    @test_throws AssertionError quantile(model, 1)
 end
