@@ -1,5 +1,3 @@
-using EGPD, Test
-
 @testset "EGPpower" begin
     @test_throws ArgumentError EGPpower(-1, .2, 2)
     @test_throws ArgumentError EGPpower(-1, .2, -2)
