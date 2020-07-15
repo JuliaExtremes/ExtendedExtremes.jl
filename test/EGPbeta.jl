@@ -5,7 +5,7 @@
     σ = 1
     ξ = .3
     δ = 2
-    model = EGPpower(σ, ξ, δ)
+    model = EGPbeta(σ, ξ, δ)
 
     @test minimum(model) == 0
     @test maximum(model) == Inf
