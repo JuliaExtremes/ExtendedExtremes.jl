@@ -1,12 +1,14 @@
 module EGPD
 
 using CSV, Distributions, Extremes, Optim
+using Gadfly
 import Distributions: cdf, insupport, logcdf, logpdf, params, partype, pdf, quantile, sampler
 import Distributions: qqbuild
 import Random: AbstractRNG
 import Base: maximum, minimum, rand
 
 include("parameterestimation.jl")
+include("plots.jl")
 include("utils.jl")
 
 # distributions
@@ -37,6 +39,8 @@ export
     sampler,      # create a Sampler object for efficient samples
 
     qqbuild,
+    qqplot,
+    Guide,
 
     EGPpowerfit,
     EGPpowermixfit,
