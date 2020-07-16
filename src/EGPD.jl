@@ -38,6 +38,8 @@ export
     rand,
     sampler,      # create a Sampler object for efficient samples
 
+    load,
+
     qqbuild,
     qqplot,
     Guide,
