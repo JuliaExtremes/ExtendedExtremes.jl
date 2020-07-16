@@ -2,6 +2,7 @@ module EGPD
 
 using CSV, Distributions, Extremes, Optim
 import Distributions: cdf, insupport, logcdf, logpdf, params, partype, pdf, quantile, sampler
+import Distributions: qqbuild
 import Random: AbstractRNG
 import Base: maximum, minimum, rand
 
@@ -34,6 +35,8 @@ export
     quantile,    # inverse of cdf (defined for p in (0,1))
     rand,
     sampler,      # create a Sampler object for efficient samples
+
+    qqbuild,
 
     EGPpowerfit,
     EGPpowermixfit,
