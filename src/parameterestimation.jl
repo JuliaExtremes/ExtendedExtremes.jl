@@ -125,3 +125,35 @@ function EGPbetapowerfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Fl
 
     return fittedmodel
 end
+
+function EGPnormalfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64[])
+    inner_optimizer = NelderMead()
+    lower = [0, -Inf, 0]
+    upper = [Inf, Inf, Inf]
+
+    if isempty(initialvalues)
+        σ₀, ξ₀, κ₀ = [1, 0.15, 1]  # à remplacer par une fonction (getinitialvalue)
+        initialvalues = [σ₀, ξ₀, κ₀]
+    end
+
+    function loglike(σ::Real, ξ::Real, κ::Real)
+        pd = EGPnormal(σ, ξ, κ)
+        ll = sum(logpdf.(pd, data))
+        return ll
+    end
+
+    fobj(θ) = -loglike(θ...)
+
+    res = optimize(fobj, lower, upper, initialvalues, Fminbox(inner_optimizer))
+
+    if Optim.converged(res)
+        σ̂, ξ̂, κ̂ = [Optim.minimizer(res)...]
+    else
+        @warn "The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values."
+        σ̂, ξ̂, κ̂  = [initialvalues...]
+    end
+
+    fittedmodel = EGPnormal(σ̂, ξ̂, κ̂)
+
+    return fittedmodel
+end
