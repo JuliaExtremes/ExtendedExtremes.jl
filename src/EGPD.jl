@@ -49,6 +49,7 @@ export
     EGPpowerfit,
     EGPpowermixfit,
     EGPbetafit,
-    EGPbetapowerfit
+    EGPbetapowerfit,
+    EGPnormalfit
 
 end # module
