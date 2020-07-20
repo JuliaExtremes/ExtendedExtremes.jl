@@ -16,6 +16,7 @@ include("distributions/naveau2016_type1.jl");
 include("distributions/naveau2016_type2.jl");
 include("distributions/naveau2016_type3.jl");
 include("distributions/naveau2016_type4.jl");
+include("distributions/EGPnormal.jl");
 
 export
     # distribution types
@@ -23,6 +24,7 @@ export
     EGPpowermix,
     EGPbeta,
     EGPbetapower,
+    EGPnormal,
 
     # methods
     cdf,         # cumulative distribution function
