@@ -42,6 +42,8 @@ export
 
     load,
 
+    BIC,
+
     qqbuild,
     qqplot,
     Guide,
