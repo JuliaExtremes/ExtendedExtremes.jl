@@ -36,7 +36,7 @@ EGPbetapower(σ::Integer, ξ::Integer, δ::Integer, κ::Integer) = EGPbetapower(
 
 
 minimum(d::EGPbetapower) = 0.0
-maximum(d::EGPbetapower) = Inf
+maximum(d::EGPbetapower) = Inf * (d.ξ >= 0) - ( d.σ / d.ξ ) * (d.ξ < 0)
 insupport(d::EGPbetapower, x::Real) = minimum(d) <= x <= maximum(d)
 
 

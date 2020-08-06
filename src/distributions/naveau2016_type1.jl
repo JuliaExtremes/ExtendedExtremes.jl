@@ -35,7 +35,7 @@ EGPpower(σ::Integer, ξ::Integer, κ::Integer) = EGPpower(float(σ), float(ξ),
 
 
 minimum(d::EGPpower) = 0.0
-maximum(d::EGPpower) = Inf
+maximum(d::EGPpower) = Inf * (d.ξ >= 0) - ( d.σ / d.ξ ) * (d.ξ < 0)
 insupport(d::EGPpower, x::Real) = minimum(d) <= x <= maximum(d)
 
 

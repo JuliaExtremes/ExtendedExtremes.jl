@@ -35,7 +35,7 @@ EGPbeta(σ::Integer, ξ::Integer, δ::Integer) = EGPbeta(float(σ), float(ξ), f
 
 
 minimum(d::EGPbeta) = 0.0
-maximum(d::EGPbeta) = Inf
+maximum(d::EGPbeta) = Inf * (d.ξ >= 0) - ( d.σ / d.ξ ) * (d.ξ < 0)
 insupport(d::EGPbeta, x::Real) = minimum(d) <= x <= maximum(d)
 
 

@@ -37,7 +37,7 @@ EGPpowermix(σ::Integer, ξ::Integer, κ₁::Integer, κ₂::Integer, p::Integer
 
 
 minimum(d::EGPpowermix) = 0.0
-maximum(d::EGPpowermix) = Inf
+maximum(d::EGPpowermix) = Inf * (d.ξ >= 0) - ( d.σ / d.ξ ) * (d.ξ < 0)
 insupport(d::EGPpowermix, x::Real) = minimum(d) <= x <= maximum(d)
 
 
