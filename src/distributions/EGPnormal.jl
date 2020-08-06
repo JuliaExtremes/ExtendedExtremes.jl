@@ -29,7 +29,7 @@ EGPnormal(σ::Integer, ξ::Integer, κ::Integer) = EGPnormal(float(σ), float(ξ
 
 
 minimum(d::EGPnormal) = 0.0
-maximum(d::EGPnormal) = Inf * d.ξ >= 0 - ( d.σ / d.ξ ) * d.ξ < 0
+maximum(d::EGPnormal) = Inf * (d.ξ >= 0) - ( d.σ / d.ξ ) * (d.ξ < 0)
 insupport(d::EGPnormal, x::Real) = minimum(d) <= x <= maximum(d)
 
 
