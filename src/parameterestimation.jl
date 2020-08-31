@@ -30,7 +30,7 @@ end
 function EGPbetafit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64[])
 
     if isempty(initialvalues)
-        σ₀, ξ₀, δ₀ = [0, 0.15, 0]
+        logσ₀, ξ₀, logδ₀ = [0, 0.15, 0]
         initialvalues = [logσ₀, ξ₀, logδ₀]
     end
 
