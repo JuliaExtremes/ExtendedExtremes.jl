@@ -1,7 +1,7 @@
 @testset "Reproducing Naveau Results" begin
     @testset "Model (i)" begin
 
-        data = load("rain")
+        data = Extremes.dataset("rain")
 
         # Fit of the first model by maximum likelihood
         fm = EGPpowerfit(data.Rainfall[data.Rainfall .> 0])
@@ -17,10 +17,10 @@
 
     @testset "Model (iii)" begin
 
-        data = load("rain")
+        data = Extremes.dataset("rain")
 
         # Fit of the first model by maximum likelihood
-        fm = EGPbetafit(data.Rainfall[data.Rainfall .> 0], initialvalues = [1, 0.15, 1.2])
+        fm = EGPbetafit(data.Rainfall[data.Rainfall .> 0], initialvalues = [log(5), 0.15, log(10)])
 
         # Parameter estimates
         θ̂ = [params(fm)[1]; params(fm)[2]; params(fm)[3]]
@@ -33,10 +33,10 @@
 
     @testset "Model (iv)" begin
 
-        data = load("rain")
+        data = Extremes.dataset("rain")
 
         # Fit of the first model by maximum likelihood
-        fm = EGPbetapowerfit(data.Rainfall[data.Rainfall .> 0], initialvalues = [1, 0.15, 1.2, 2])
+        fm = EGPbetapowerfit(data.Rainfall[data.Rainfall .> 0], initialvalues = [log(5), 0.15, log(1.2), log(2)])
 
         # Parameter estimates
         θ̂ = [params(fm)[1]; params(fm)[2]; params(fm)[3]; params(fm)[4]]
