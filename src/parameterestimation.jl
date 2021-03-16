@@ -12,7 +12,7 @@ function EGPpowerfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float6
             pd = EGPpower(σ, ξ, κ)
 
             r_data = data[data .>= censoring]
-            l_data = fill(censor, count(data .< censoring))
+            l_data = fill(censoring, count(data .< censoring))
 
             ll = sum(logcdf.(pd, l_data)) + sum(logpdf.(pd, r_data))
 
@@ -54,7 +54,7 @@ function EGPpowermixfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Flo
             pd = EGPpowermix(σ, ξ, κ₁, κ₂, p)
 
             r_data = data[data .>= censoring]
-            l_data = fill(censor, count(data .< censoring))
+            l_data = fill(censoring, count(data .< censoring))
 
             ll = sum(logcdf.(pd, l_data)) + sum(logpdf.(pd, r_data))
 
@@ -92,7 +92,7 @@ function EGPbetafit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64
             pd = EGPbeta(σ, ξ, δ)
 
             r_data = data[data .>= censoring]
-            l_data = fill(censor, count(data .< censoring))
+            l_data = fill(censoring, count(data .< censoring))
 
             ll = sum(logcdf.(pd, l_data)) + sum(logpdf.(pd, r_data))
 
@@ -130,7 +130,7 @@ function EGPbetapowerfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Fl
             pd = EGPbetapower(σ, ξ, δ, κ)
 
             r_data = data[data .>= censoring]
-            l_data = fill(censor, count(data .< censoring))
+            l_data = fill(censoring, count(data .< censoring))
 
             ll = sum(logcdf.(pd, l_data)) + sum(logpdf.(pd, r_data))
 
