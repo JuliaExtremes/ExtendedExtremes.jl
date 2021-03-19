@@ -13,6 +13,7 @@ include("utils.jl")
 
 # distributions
 include("distributions/naveau2016_type1.jl");
+include("distributions/naveau2016_type1_nonstat.jl");
 include("distributions/naveau2016_type2.jl");
 include("distributions/naveau2016_type3.jl");
 include("distributions/naveau2016_type4.jl");
