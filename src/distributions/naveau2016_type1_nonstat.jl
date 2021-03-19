@@ -21,18 +21,6 @@ struct nonstatEGPpower{T<:Real} <: ContinuousUnivariateDistribution
     end
 end
 
-struct nonstatEGPpower{T<:Real} <: ContinuousUnivariateDistribution
-    σ::T    # scale parameter
-    ξ₀::T    # rate of upper tail decay
-    ξ₁::T    # rate of upper tail decay
-    κ₀::T    # shape of the lower tail
-    κ₁::T    # shape of the lower tail
-
-    function nonstatEGPpower{T}(σ::T, ξ₀::T, ξ₁::T, κ₀::T, κ₁::T) where {T <: Real}
-        new{T}(σ, ξ₀, ξ₁, κ₀, κ₁)
-    end
-end
-
 function nonstatEGPpower(σ::T, ξ₀::T, ξ₁::T, κ₀::T, κ₁::T; check_args=true) where {T <: Real}
     #check_args && @check_args(EGPpower, σ > zero(σ) && κ > zero(κ))
     return nonstatEGPpower{T}(σ, ξ₀, ξ₁, κ₀, κ₁)
@@ -58,13 +46,30 @@ function logpdf(d::nonstatEGPpower{T}, x::Real, covariate::Real) where T<:Real
     return p
 end
 
+function logcdf(d::nonstatEGPpower{T}, x::Real, covariate::Real) where T<:Real
+    μ = 0
+    σ = d.σ
+    ξ = d.ξ₀ + d.ξ₁*covariate
+    κ = d.κ₀ + d.κ₁*covariate
+
+    pd = GeneralizedPareto(μ, 1, ξ)
+
+    #G(v::Real, κ::Real) = v^κ
+    #lG(v::Real, κ::Real) = κ*log(v)
+
+    p = κ*Distributions.logcdf(pd, x/σ)
+
+    return p
+end
+
 #### Parameter estimation
 
 function EGPpowerfit(data::Array{<:Real,1},
     covariate::Array{<:Real,1};  # Vecteur de la variable explicative
     initialvalues::Vector{<:Real}=Float64[],
     lowertailcov::Bool=true,  # variable explicative sur κ ?
-    uppertailcov::Bool=true)  # variable explicative sur ξ ?
+    uppertailcov::Bool=true,  # variable explicative sur ξ ?
+    censoring::Real=0)
 
     # TO-DO :
     # -tenir compte du nombre de parametres pour les initialvalues
@@ -77,15 +82,22 @@ function EGPpowerfit(data::Array{<:Real,1},
     end
 
     if !lowertailcov & !uppertailcov
-        return EGPpowerfit(data, initialvalues = [σ₀, ξ₀₀, κ₀₀])
+        return EGPpowerfit(data, initialvalues = [σ₀, ξ₀₀, κ₀₀], censoring = censoring)
     else
+        r_data = data[data .>= censoring]
+        l_data = fill(censoring, count(data .< censoring))
+
+        r_cov = covariate[data .>= censoring]
+        l_cov = covariate[data .< censoring]
+
         # Modèle avec ξ = ξ₀ + ξ₁*covariate
         function loglike_xi(σ, ξ₀, ξ₁, κ₀)
             if σ <= 0 || κ₀ <= 0
                 return -Inf
             else
                 pd = nonstatEGPpower(σ, ξ₀, ξ₁, κ₀, 0)
-                ll = sum(logpdf.(pd, data, covariate))
+                #ll = sum(logpdf.(pd, data, covariate))
+                ll = sum(logcdf.(pd, l_data, l_cov)) + sum(logpdf.(pd, r_data, r_cov))
                 return ll
             end
         end
@@ -95,7 +107,8 @@ function EGPpowerfit(data::Array{<:Real,1},
                 return -Inf
             else
                 pd = nonstatEGPpower(σ, ξ₀, 0, κ₀, κ₁)
-                ll = sum(logpdf.(pd, data, covariate))
+                #ll = sum(logpdf.(pd, data, covariate))
+                ll = sum(logcdf.(pd, l_data, l_cov)) + sum(logpdf.(pd, r_data, r_cov))
                 return ll
             end
         end
@@ -105,7 +118,8 @@ function EGPpowerfit(data::Array{<:Real,1},
                 return -Inf
             else
                 pd = nonstatEGPpower(σ, ξ₀, ξ₁, κ₀, κ₁)
-                ll = sum(logpdf.(pd, data, covariate))
+                #ll = sum(logpdf.(pd, data, covariate))
+                ll = sum(logcdf.(pd, l_data, l_cov)) + sum(logpdf.(pd, r_data, r_cov))
                 return ll
             end
         end
@@ -129,7 +143,7 @@ function EGPpowerfit(data::Array{<:Real,1},
             fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3], Optim.minimizer(res)[4], Optim.minimizer(res)[5])
         end
 
-        return fittedmodel, getparametervalues(fittedmodel, covariate)
+        return fittedmodel, getparametervalues.(fittedmodel, covariate)
 
         # TO-DO : - vérifier la convergence, ex :
             #if Optim.converged(res)
