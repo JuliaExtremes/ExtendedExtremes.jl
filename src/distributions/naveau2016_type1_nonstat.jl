@@ -3,7 +3,6 @@
 # -voir pour ajouter la censure dans la fct fit
 # -vérifier la convergence pour l'optimisation dans la fct fit
 # -corriger le nb de parametres dans la fct BIC
-# -ajouter les fcts pour model diagnostics (plot exp scale)
 
 """
     nonstatEGPpower(σ, ξ₀, ξ₁, κ₀, κ₁)
