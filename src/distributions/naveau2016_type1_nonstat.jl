@@ -1,8 +1,7 @@
 # TO-DO :
 # -tenir compte du nombre de parametres pour les initialvalues dans la fct fit
-# -voir pour ajouter la censure dans la fct fit
 # -vérifier la convergence pour l'optimisation dans la fct fit
-# -corriger le nb de parametres dans la fct BIC
+
 
 """
     nonstatEGPpower(σ, ξ₀, ξ₁, κ₀, κ₁)
@@ -29,6 +28,7 @@ end
 nonstatEGPpower(σ::Real, ξ₀::Real, ξ₁::Real, κ₀::Real, κ₁::Real) = nonstatEGPpower(promote(σ, ξ₀, ξ₁, κ₀, κ₁)...)
 nonstatEGPpower(σ::Integer, ξ₀::Integer, ξ₁::Integer, κ₀::Integer, κ₁::Integer) = nonstatEGPpower(float(σ), float(ξ₀), float(ξ₁), float(κ₀), float(κ₁))
 
+params(d::nonstatEGPpower) = (d.σ, d.ξ₀, d.ξ₁, d.κ₀, d.κ₁)
 #### Evaluation
 
 function logpdf(d::nonstatEGPpower{T}, x::Real, covariate::Real) where T<:Real
@@ -173,11 +173,19 @@ end
     BIC(fm, data, covariate)
 
 """
-function BIC(fm::nonstatEGPpower{T}, data::Array{T,1}, covariate::Array{T,1}) where T<:Real
+function BIC(fm::nonstatEGPpower{T}, data::Array{T,1}, covariate::Array{T,1}; censoring::Real=0) where T<:Real
     n = size(data,1)
-    #k = size(params(fm),1)
+    k = size(params(fm),1)
+    fm.ξ₁ == 0 ? k = k-1 : nothing
+    fm.κ₁ == 0 ? k = k-1 : nothing
 
-    k = 5  # TO-DO : -corriger le nb de parametres
+    r_data = data[data .>= censoring]
+    l_data = fill(censoring, count(data .< censoring))
 
-    return sum(logpdf.(fm, data, covariate)) - k/2*log(n)
+    r_cov = covariate[data .>= censoring]
+    l_cov = covariate[data .< censoring]
+
+    ll = sum(logcdf.(fm, l_data, l_cov)) + sum(logpdf.(fm, r_data, r_cov))
+
+    return ll - k/2*log(n)
 end
