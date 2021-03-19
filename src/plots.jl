@@ -15,7 +15,7 @@ end
 """
     qqbuild() (standardisé)
 """
-function qqbuild(fm::Array{EGPpower{Float64},1}, data::Array{<:Real,1})
+function qqbuild(fm::Array{UnivariateDistribution,1}, data::Array{<:Real,1})
     # TO-DO : - vérifier l'ordre des variables (x vs y)
 
     ztilde = -log.(1 .- cdf.(fm, data));  # Transformation to a standard exponential distribution
@@ -48,7 +48,7 @@ end
 """
     ppbuild() (standardisé)
 """
-function ppbuild(fm::Array{EGPpower{Float64},1}, data::Array{<:Real,1})
+function ppbuild(fm::Array{UnivariateDistribution,1}, data::Array{<:Real,1})
     # TO-DO : - vérifier l'ordre des variables (x vs y)
 
     ztilde = -log.(1 .- cdf.(fm, data));  # Transformation to a standard exponential distribution
