@@ -66,6 +66,20 @@ end
 
 cdf(d::nonstatEGPpower, x::Real, covariate::Real) = exp(logcdf(d, x, covariate))
 
+function quantile(d::nonstatEGPpower{T}, p::Real, covariate::Real) where T<:Real
+    @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
+
+    σ = d.σ
+    ξ = d.ξ₀ + d.ξ₁*covariate
+    κ = d.κ₀ + d.κ₁*covariate
+
+    invG(p::Real, κ::Real) = p^(1/κ)
+
+    x = (σ/ξ)*(((1 - invG(p,κ))^(-ξ)) - 1)
+
+    return x
+end
+
 #### Parameter estimation
 
 function EGPpowerfit(data::Array{<:Real,1},
