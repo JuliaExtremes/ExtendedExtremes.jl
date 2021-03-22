@@ -46,6 +46,8 @@ function logpdf(d::nonstatEGPpower{T}, x::Real, covariate::Real) where T<:Real
     return p
 end
 
+pdf(d::nonstatEGPpower, x::Real, covariate::Real) = exp(logpdf(d, x, covariate))
+
 function logcdf(d::nonstatEGPpower{T}, x::Real, covariate::Real) where T<:Real
     μ = 0
     σ = d.σ
@@ -61,6 +63,8 @@ function logcdf(d::nonstatEGPpower{T}, x::Real, covariate::Real) where T<:Real
 
     return p
 end
+
+cdf(d::nonstatEGPpower, x::Real, covariate::Real) = exp(logcdf(d, x, covariate))
 
 #### Parameter estimation
 
