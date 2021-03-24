@@ -19,6 +19,9 @@ include("distributions/naveau2016_type3.jl");
 include("distributions/naveau2016_type4.jl");
 include("distributions/EGPnormal.jl");
 
+# bias correction
+include("biascorrect.jl");
+
 export
     # distribution types
     EGPpower,
@@ -41,7 +44,7 @@ export
     rand,
     sampler,      # create a Sampler object for efficient samples
 
-    load,
+    #load,
 
     BIC,
 
@@ -53,6 +56,9 @@ export
     EGPpowermixfit,
     EGPbetafit,
     EGPbetapowerfit,
-    EGPnormalfit
+    EGPnormalfit,
+
+    T_transform,
+    invT_transform
 
 end # module
