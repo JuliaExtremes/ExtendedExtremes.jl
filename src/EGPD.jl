@@ -59,6 +59,7 @@ export
     EGPnormalfit,
 
     T_transform,
-    invT_transform
+    #invT_transform
+    bias_correct
 
 end # module
