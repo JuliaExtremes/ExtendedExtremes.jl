@@ -1,113 +1,37 @@
 """
-    T_transform(obs_ref, model_ref, model_fut, x) (stationnary)
+    T_transform(Yc, Xc, Xp, x) (stationnary)
 
 """
-function T_transform(obs_ref::ContinuousUnivariateDistribution,  # dist des obs période de référence
-                     model_ref::ContinuousUnivariateDistribution,  # dist du modèle période de référence
-                     model_fut::ContinuousUnivariateDistribution,  # dist du modèle période future
+function T_transform(Yc::ContinuousUnivariateDistribution,  # Distribution des données observées pour la période de calibration
+                     Xc::ContinuousUnivariateDistribution,  # Distribution des données du modèle pour la période de calibration
+                     Xp::ContinuousUnivariateDistribution,  # Distribution des données du modèle pour la période projetée
                      x::Real)
 
-    Fmodel_fut = cdf(model_fut, x)
+    F_Xp = cdf(Xp, x)  # Évaluation en x de la CDF des données du modèle pour la période projeté
 
-    Fm1model_ref = quantile(model_ref, Fmodel_fut)
+    Fm1_Xc = quantile(Xc, F_Xp)  # Quantile correspondant de la distribution des données du modèle pour la période de calibration
 
-    Fobs = cdf(obs_ref,  Fm1model_ref)
+    F_Yp = cdf(Yc,  Fm1_Xc)  # Évaluation de la CDF des données observées pour la période de calibration au point correspondant
 
-    return Fobs
+    return F_Yp  # Valeur de la CDF évaluée au point x
 end
 
 """
-    T_transform(obs_ref, model_ref, model_fut, covar_ref, covar_fut, x)  (non-stationnary)
+    T_transform(Yx, Xc, Xc_cov, Xp, Xp_cov, x)  (non-stationnary)
 
 """
-function T_transform(obs_ref::nonstatEGPpower,  # dist des obs période de référence
-                     model_ref::nonstatEGPpower,  # dist du modèle période de référence
-                     model_fut::nonstatEGPpower,  # dist du modèle période future
-                     covar_ref::Real,  # covariable pour la période de référence (ex : [CO₂] de l'année 1980)
-                     covar_fut::Real, # covariable pour la période future (ex : [CO₂] de l'année 2050)
+function T_transform(Yc::EGPpower,  # Distribution des données observées pour la période de calibration
+                     Xc::nonstatEGPpower,  # Distribution des données du modèle pour la période de calibration
+                     Xc_cov::Real,  # covariable pour la période de calibration (ex : [CO₂] de l'année 1980)
+                     Xp::nonstatEGPpower,  # Distribution des données du modèle pour la période projetée
+                     Xp_cov::Real,  # covariable pour la période projetée (ex : [CO₂] de l'année 2050)
                      x::Real)
 
-    Fmodel_fut = cdf(model_fut, x, covar_fut)
+    F_Xp = cdf(Xp, x, Xp_cov)  # Évaluation en x de la CDF des données du modèle pour la période projeté
 
-    Fm1model_ref = quantile(model_ref, Fmodel_fut, covar_ref)
+    Fm1_Xc = quantile(Xc, F_Xp, Xc_cov)  # Quantile correspondant de la distribution des données du modèle pour la période de calibration
 
-    Fobs = cdf(obs_ref,  Fm1model_ref, covar_ref)
+    F_Yp = cdf(Yc,  Fm1_Xc)  # Évaluation de la CDF des données observées pour la période de calibration au point correspondant
 
-    return Fobs
+    return F_Yp  # Valeur de la CDF évaluée au point x
 end
-
-"""
-    invT_transform(obs_ref, model_ref, model_fut, p) (stationnary)
-
-"""
-function invT_transform(obs_ref::ContinuousUnivariateDistribution,  # dist des obs période de référence
-                        model_ref::ContinuousUnivariateDistribution,  # dist du modèle période de référence
-                        model_fut::ContinuousUnivariateDistribution,  # dist du modèle période future
-                        p::Real)
-
-    @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
-
-    # Méthode de la bisection
-
-    a = 0
-    b = 1000  # à vérifier
-    δ = 0.00001
-    crit = 1
-    X = NaN
-    while crit > 2*δ
-        X = (a + b)/2
-        F = T_transform(obs_ref, model_ref, model_fut, X)
-        if F <= p
-            a = X
-        else
-            b = X
-        end
-        crit = b - a
-    end
-    return X
-end
-
-"""
-    invT_transform(obs_ref, model_ref, model_fut, covar_ref, covar_fut, p)  (non-stationnary)
-
-"""
-function invT_transform(obs_ref::nonstatEGPpower,  # dist des obs période de référence
-              model_ref::nonstatEGPpower,  # dist du modèle période de référence
-              model_fut::nonstatEGPpower,  # dist du modèle période future
-              covar_ref::Real,  # covariable pour la période de référence (ex : [CO₂] de l'année 1980)
-              covar_fut::Real, # covariable pour la période future (ex : [CO₂] de l'année 2050)
-              p::Real)
-
-    @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
-
-
-    # Méthode de la bisection
-
-    a = 0
-    b = 1000  # à vérifier
-    δ = 0.00001
-    crit = 1
-    X = NaN
-    while crit > 2*δ
-        X = (a + b)/2
-        F = T_transform(obs_ref, model_ref, model_fut, covar_ref, covar_fut, X)
-        if F <= p
-            a = X
-        else
-            b = X
-        end
-        crit = b - a
-    end
-    return X
-end
-
-
-# Développement de l'algo de correction :
-# On a besoin de obs_ref, model_ref et model_fut, on va commencer par le cas stationnaire
-# Étapes :
-# 1. Ajuster le modèle sur les observations pour obtenir obs_ref
-# 2. Ajuster le modèle sur les données de calibration du modèle pour obtenir model_ref
-# 3. Ajuster le modèle sur les données futures du modèle pour obtenir model_fut
-# 4. Calculer la cdf Fmodel_fut
-# 5. Calculer la cdf-transform inverse de Fmodel_fut avec obs_ref, model_ref et model_fut
-# 6. Comparer les valeurs obtenues avec la valeurs simulées
