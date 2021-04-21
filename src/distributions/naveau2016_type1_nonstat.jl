@@ -29,6 +29,19 @@ nonstatEGPpower(σ::Real, ξ₀::Real, ξ₁::Real, κ₀::Real, κ₁::Real) = 
 nonstatEGPpower(σ::Integer, ξ₀::Integer, ξ₁::Integer, κ₀::Integer, κ₁::Integer) = nonstatEGPpower(float(σ), float(ξ₀), float(ξ₁), float(κ₀), float(κ₁))
 
 params(d::nonstatEGPpower) = (d.σ, d.ξ₀, d.ξ₁, d.κ₀, d.κ₁)
+
+"""
+    EGPpower(fm::nonstatEGPpower{T}, covariate::Real)
+
+Pour obtenir le modèle stationnaire à partir de la valeur de la variable explicative.
+"""
+function EGPpower(fm::nonstatEGPpower{T}, covariate::Real) where T<:Real
+    σ = fm.σ
+    ξ = fm.ξ₀ + (fm.ξ₁ * covariate)
+    κ = fm.κ₀ + (fm.κ₁ * covariate)
+    return EGPpower(σ, ξ, κ)
+end
+
 #### Evaluation
 
 function logpdf(d::nonstatEGPpower{T}, x::Real, covariate::Real) where T<:Real
@@ -161,7 +174,7 @@ function EGPpowerfit(data::Array{<:Real,1},
             fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3], Optim.minimizer(res)[4], Optim.minimizer(res)[5])
         end
 
-        return fittedmodel, getparametervalues.(fittedmodel, covariate)
+        return fittedmodel, EGPpower.(fittedmodel, covariate)
 
         # TO-DO : - vérifier la convergence, ex :
             #if Optim.converged(res)
@@ -171,19 +184,6 @@ function EGPpowerfit(data::Array{<:Real,1},
             #    σ̂, ξ̂, κ̂  = [initialvalues[1], initialvalues[2], initialvalues[3]]
             #end
     end
-end
-
-
-"""
-     getparametervalues(fm, covariate)
-
-Pour obtenir les valeurs des paramètres à partir de la valeur de la variable explicative.
-"""
-function getparametervalues(fm::nonstatEGPpower{T}, covariate::Real) where T<:Real
-    σ = fm.σ
-    ξ = fm.ξ₀ + (fm.ξ₁ * covariate)
-    κ = fm.κ₀ + (fm.κ₁ * covariate)
-    return EGPpower(σ, ξ, κ)
 end
 
 
