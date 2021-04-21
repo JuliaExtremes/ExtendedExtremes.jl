@@ -18,6 +18,7 @@ include("distributions/naveau2016_type2.jl");
 include("distributions/naveau2016_type3.jl");
 include("distributions/naveau2016_type4.jl");
 include("distributions/EGPnormal.jl");
+include("distributions/kallache2011.jl");
 
 # bias correction
 include("biascorrect.jl");
@@ -60,6 +61,7 @@ export
 
     T_transform,
     #invT_transform
-    bias_correct
+    bias_correct,
+    CDFT
 
 end # module
