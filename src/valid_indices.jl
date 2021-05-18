@@ -96,7 +96,7 @@ function index_RVxmax(ts::TimeArray, p::Real)
 
     x = collapse(ts,year,maximum)
 
-    fm = Extremes.gevfit(values(z))
+    fm = Extremes.gevfit(values(x))
     r = Extremes.returnlevel(fm, p)
 
     return r.value[1]
