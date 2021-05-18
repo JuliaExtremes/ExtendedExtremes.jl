@@ -23,6 +23,7 @@ include("distributions/kallache2011.jl");
 
 # bias correction
 include("biascorrect.jl");
+include("valid_indices.jl")
 
 export
     # distribution types
@@ -46,23 +47,34 @@ export
     rand,
     sampler,      # create a Sampler object for efficient samples
 
-    #load,
 
-    BIC,
-
-    qqbuild,
-    qqplot,
-    Guide,
-
+    # distribution fitting
     EGPpowerfit,
     EGPpowermixfit,
     EGPbetafit,
     EGPbetapowerfit,
     EGPnormalfit,
 
+    # validation
+    BIC,
+    qqbuild,
+    qqplot,
+    Guide,
+
+    # bias correction
     T_transform,
-    #invT_transform
     bias_correct,
-    CDFT
+    CDFT,
+
+    # validation indices
+    index_skew,
+    index_Rx,
+    index_R10,
+    index_pXwet,
+    index_p98wet,
+    index_pXwetamount,
+    index_p98wetamount,
+    index_RVxmax,
+    index_RV20max
 
 end # module
