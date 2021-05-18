@@ -2,7 +2,7 @@
     CDFT(Yc, Xc, Xp)
 
 """
-struct CDFT
+struct CDFT <: ContinuousUnivariateDistribution
     Yc::ContinuousUnivariateDistribution  # Distribution des données observées pour la période de calibration
     Xc::ContinuousUnivariateDistribution  # Distribution des données du modèle pour la période de calibration
     Xp::ContinuousUnivariateDistribution  # Distribution des données du modèle pour la période projetée
