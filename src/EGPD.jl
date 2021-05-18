@@ -2,6 +2,7 @@ module EGPD
 
 using CSV, Distributions, Extremes, Optim
 using Gadfly
+using TimeSeries
 import Distributions: cdf, insupport, logcdf, logpdf, params, partype, pdf, quantile, sampler
 #import Distributions: qqbuild
 import Random: AbstractRNG
