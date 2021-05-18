@@ -21,7 +21,7 @@ end
 Returns the relative frequency of days with precipitation above x mm.
 """
 function index_Rx(ts::TimeArray, x::Real)
-    return sum(values(ts .> x)) / length(sim)
+    return sum(values(ts .> x)) / length(ts)
 end
 
 # R10
@@ -68,7 +68,7 @@ Returns the precipitation amount from days above p percentile.
 function index_pXwetamount(ts::TimeArray, p::Real; wet_thresh=1.0)
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
-    thresh = index_pXwet(sim, p, wet_thresh=wet_thresh)
+    thresh = index_pXwet(ts, p, wet_thresh=wet_thresh)
 
     x = values(ts)
     x = x[x .> thresh]
@@ -83,7 +83,7 @@ end
 Returns the precipitation amount from days above 98% percentile.
 """
 function index_p98wetamount(ts::TimeArray)
-    return index_pXwetamount(sim, 0.98)
+    return index_pXwetamount(ts, 0.98)
 end
 
 
