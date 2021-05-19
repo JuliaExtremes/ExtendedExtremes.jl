@@ -95,7 +95,7 @@ end
 
 #### Parameter estimation
 
-function EGPpowerfit(data::Array{<:Real,1},
+function EGPnonstatpowerfit(data::Array{<:Real,1},
     covariate::Array{<:Real,1};  # Vecteur de la variable explicative
     initialvalues::Vector{<:Real}=Float64[],
     lowertailcov::Bool=true,  # variable explicative sur κ ?

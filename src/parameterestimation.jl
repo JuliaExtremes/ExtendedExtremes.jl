@@ -1,39 +1,62 @@
-function EGPpowerfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64[], censoring::Real=0)
+function EGPpowerfit(data::Array{<:Real,1};
+    initialvalues::Vector{<:Real}=Float64[],
+    censoring::Real=0,
+    covariate::Array{<:Real,1}=Float64[],  # Vecteur de la variable explicative
+    lowertailcov::Bool=true,  # variable explicative sur κ ?
+    uppertailcov::Bool=true)  # variable explicative sur ξ ?)
 
-    if isempty(initialvalues)
-        σ₀, ξ₀, κ₀ = [1, 0.15, 1]
-        initialvalues = [σ₀, ξ₀, κ₀]
-    end
-
-    function loglike(σ::Real, ξ::Real, κ::Real)
-        if κ <= 0 || σ <= 0
-            return -Inf
-        else
-            pd = EGPpower(σ, ξ, κ)
-
-            r_data = data[data .>= censoring]
-            l_data = fill(censoring, count(data .< censoring))
-
-            ll = sum(logcdf.(pd, l_data)) + sum(logpdf.(pd, r_data))
-
-            return ll
-        end
-    end
-
-    fobj(θ) = -loglike(θ...)
-
-    res = optimize(fobj, initialvalues)
-
-    if Optim.converged(res)
-        σ̂, ξ̂, κ̂ = [Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3]]
+    if !isempty(covariate)
+        return EGPnonstatpowerfit(data, covariate, initialvalues=initialvalues, lowertailcov=lowertailcov, uppertailcov=uppertailcov, censoring=censoring)
     else
-        @warn "The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values."
-        σ̂, ξ̂, κ̂  = [initialvalues[1], initialvalues[2], initialvalues[3]]
+        if isempty(initialvalues)
+            σ₀, ξ₀, κ₀ = [1, 0.15, 1]
+            initialvalues = [σ₀, ξ₀, κ₀]
+        end
+
+        function loglike(σ::Real, ξ::Real, κ::Real)
+            if κ <= 0 || σ <= 0
+                return -Inf
+            else
+                pd = EGPpower(σ, ξ, κ)
+
+                r_data = data[data .>= censoring]
+                l_data = fill(censoring, count(data .< censoring))
+
+                ll = sum(logcdf.(pd, l_data)) + sum(logpdf.(pd, r_data))
+
+                return ll
+            end
+        end
+
+        fobj(θ) = -loglike(θ...)
+
+        res = optimize(fobj, initialvalues)
+
+        if Optim.converged(res)
+            σ̂, ξ̂, κ̂ = [Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3]]
+        else
+            @warn "The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values."
+            σ̂, ξ̂, κ̂  = [initialvalues[1], initialvalues[2], initialvalues[3]]
+        end
+
+        fittedmodel = EGPpower(σ̂, ξ̂, κ̂)
+
+        return fittedmodel
     end
+end
 
-    fittedmodel = EGPpower(σ̂, ξ̂, κ̂)
+function EGPpowerfit(data::TimeArray;
+    initialvalues::Vector{<:Real}=Float64[],
+    censoring::Real=0,
+    covariate::TimeArray=TimeArray[],  # Vecteur de la variable explicative
+    lowertailcov::Bool=true,  # variable explicative sur κ ?
+    uppertailcov::Bool=true)  # variable explicative sur ξ ?)
 
-    return fittedmodel
+    if isempty(covariate)
+        return EGPpowerfit(values(data), initialvalues=initialvalues, lowertailcov=lowertailcov, uppertailcov=uppertailcov, censoring=censoring)
+    else
+        return EGPpowerfit(values(data), covariate=values(covariate), initialvalues=initialvalues, lowertailcov=lowertailcov, uppertailcov=uppertailcov, censoring=censoring)
+    end
 end
 
 function EGPpowermixfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64[], censoring::Real=0)
