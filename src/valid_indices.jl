@@ -73,7 +73,7 @@ function index_pXwetamount(ts::TimeArray, p::Real; wet_thresh=1.0)
     x = values(ts)
     x = x[x .> thresh]
 
-    return sum(x)
+    return sum(x) / length(x)
 end
 
 # P98WetAmount
