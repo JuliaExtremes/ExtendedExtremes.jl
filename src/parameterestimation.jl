@@ -48,7 +48,7 @@ end
 function EGPpowerfit(data::TimeArray;
     initialvalues::Vector{<:Real}=Float64[],
     censoring::Real=0,
-    covariate::TimeArray=TimeArray[],  # Vecteur de la variable explicative
+    covariate::TimeArray=TimeArray(DateTime[], Float64[]),  # Vecteur de la variable explicative
     lowertailcov::Bool=true,  # variable explicative sur κ ?
     uppertailcov::Bool=true)  # variable explicative sur ξ ?)
 
@@ -101,6 +101,10 @@ function EGPpowermixfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Flo
     return fittedmodel
 end
 
+function EGPpowermixfit(data::TimeArray; initialvalues::Vector{<:Real}=Float64[], censoring::Real=0)
+    return EGPpowermixfit(values(data), initialvalues=initialvalues, censoring=censoring)
+end
+
 function EGPbetafit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64[], censoring::Real=0)
 
     if isempty(initialvalues)
@@ -137,6 +141,10 @@ function EGPbetafit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64
     fittedmodel = EGPbeta(σ̂, ξ̂, δ̂)
 
     return fittedmodel
+end
+
+function EGPbetafit(data::TimeArray; initialvalues::Vector{<:Real}=Float64[], censoring::Real=0)
+    return EGPbetafit(values(data), initialvalues=initialvalues, censoring=censoring)
 end
 
 function EGPbetapowerfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64[], censoring::Real=0)
@@ -177,6 +185,10 @@ function EGPbetapowerfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Fl
     return fittedmodel
 end
 
+function EGPbetapowerfit(data::TimeArray; initialvalues::Vector{<:Real}=Float64[], censoring::Real=0)
+    return EGPbetapowerfit(values(data), initialvalues=initialvalues, censoring=censoring)
+end
+
 function EGPnormalfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64[])
 
     if isempty(initialvalues)
@@ -204,4 +216,8 @@ function EGPnormalfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float
     fittedmodel = EGPnormal(σ̂, ξ̂, κ̂)
 
     return fittedmodel
+end
+
+function EGPnormalfit(data::TimeArray; initialvalues::Vector{<:Real}=Float64[])
+    return EGPnormalfit(values(data), initialvalues=initialvalues)
 end
