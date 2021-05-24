@@ -25,3 +25,7 @@ function BIC(fm::ContinuousUnivariateDistribution, data::Array{<:Real,1}; censor
 
     return ll - k/2*log(n)
 end
+
+function BIC(fm::ContinuousUnivariateDistribution, data::TimeArray; censoring::Real=0)
+    return BIC(fm, values(data), censoring=censoring)
+end
