@@ -83,7 +83,7 @@ function logcdf(d::EGPbetapower{T}, x::Real) where T<:Real
     return lf
 end
 
-cdf(d::EGPbetapower, x::Real) = exp(logpdf(d, x))
+cdf(d::EGPbetapower, x::Real) = exp(logcdf(d, x))
 
 function quantile(d::EGPbetapower{T}, p::Real) where T<:Real
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
