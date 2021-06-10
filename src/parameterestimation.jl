@@ -2,11 +2,12 @@ function EGPpowerfit(data::Array{<:Real,1};
     initialvalues::Vector{<:Real}=Float64[],
     censoring::Real=0,
     covariate::Array{<:Real,1}=Float64[],  # Vecteur de la variable explicative
-    lowertailcov::Bool=true,  # variable explicative sur κ ?
-    uppertailcov::Bool=true)  # variable explicative sur ξ ?)
+    scalecov::Bool=true, # variable explicative sur σ ?
+    lowertailcov::Bool=false,  # variable explicative sur κ ?
+    uppertailcov::Bool=false)  # variable explicative sur ξ ?)
 
     if !isempty(covariate)
-        return EGPnonstatpowerfit(data, covariate, initialvalues=initialvalues, lowertailcov=lowertailcov, uppertailcov=uppertailcov, censoring=censoring)
+        return EGPnonstatpowerfit(data, covariate, initialvalues=initialvalues, scalecov=scalecov, lowertailcov=lowertailcov, uppertailcov=uppertailcov, censoring=censoring)
     else
         if isempty(initialvalues)
             σ₀, ξ₀, κ₀ = [1, 0.15, 1]
@@ -49,13 +50,15 @@ function EGPpowerfit(data::TimeArray;
     initialvalues::Vector{<:Real}=Float64[],
     censoring::Real=0,
     covariate::TimeArray=TimeArray(DateTime[], Float64[]),  # Vecteur de la variable explicative
-    lowertailcov::Bool=true,  # variable explicative sur κ ?
-    uppertailcov::Bool=true)  # variable explicative sur ξ ?)
+    scalecov::Bool=true,
+    lowertailcov::Bool=false,  # variable explicative sur κ ?
+    uppertailcov::Bool=false)  # variable explicative sur ξ ?)
 
     if isempty(covariate)
-        return EGPpowerfit(values(data), initialvalues=initialvalues, lowertailcov=lowertailcov, uppertailcov=uppertailcov, censoring=censoring)
+        return EGPpowerfit(values(data), initialvalues=initialvalues, scalecov=scalecov, lowertailcov=lowertailcov, uppertailcov=uppertailcov, censoring=censoring)
     else
-        return EGPpowerfit(values(data), covariate=values(covariate), initialvalues=initialvalues, lowertailcov=lowertailcov, uppertailcov=uppertailcov, censoring=censoring)
+        return EGPpowerfit(values(data), covariate=values(covariate), initialvalues=initialvalues,
+        scalecov=scalecov, lowertailcov=lowertailcov, uppertailcov=uppertailcov, censoring=censoring)
     end
 end
 

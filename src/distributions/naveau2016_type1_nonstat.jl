@@ -9,26 +9,27 @@
 Extension non stationnaire du modèle 1 de Naveau. À détailler...
 """
 struct nonstatEGPpower{T<:Real} <: ContinuousUnivariateDistribution
-    σ::T    # scale parameter
+    σ₀::T    # scale parameter
+    σ₁::T    # scale parameter
     ξ₀::T    # rate of upper tail decay
     ξ₁::T    # rate of upper tail decay
     κ₀::T    # shape of the lower tail
     κ₁::T    # shape of the lower tail
 
-    function nonstatEGPpower{T}(σ::T, ξ₀::T, ξ₁::T, κ₀::T, κ₁::T) where {T <: Real}
-        new{T}(σ, ξ₀, ξ₁, κ₀, κ₁)
+    function nonstatEGPpower{T}(σ₀::T, σ₁::T, ξ₀::T, ξ₁::T, κ₀::T, κ₁::T) where {T <: Real}
+        new{T}(σ₀, σ₁, ξ₀, ξ₁, κ₀, κ₁)
     end
 end
 
-function nonstatEGPpower(σ::T, ξ₀::T, ξ₁::T, κ₀::T, κ₁::T; check_args=true) where {T <: Real}
+function nonstatEGPpower(σ₀::T, σ₁::T, ξ₀::T, ξ₁::T, κ₀::T, κ₁::T; check_args=true) where {T <: Real}
     #check_args && @check_args(EGPpower, σ > zero(σ) && κ > zero(κ))
-    return nonstatEGPpower{T}(σ, ξ₀, ξ₁, κ₀, κ₁)
+    return nonstatEGPpower{T}(σ₀, σ₁, ξ₀, ξ₁, κ₀, κ₁)
 end
 
-nonstatEGPpower(σ::Real, ξ₀::Real, ξ₁::Real, κ₀::Real, κ₁::Real) = nonstatEGPpower(promote(σ, ξ₀, ξ₁, κ₀, κ₁)...)
-nonstatEGPpower(σ::Integer, ξ₀::Integer, ξ₁::Integer, κ₀::Integer, κ₁::Integer) = nonstatEGPpower(float(σ), float(ξ₀), float(ξ₁), float(κ₀), float(κ₁))
+nonstatEGPpower(σ₀::Real, σ₁::Real, ξ₀::Real, ξ₁::Real, κ₀::Real, κ₁::Real) = nonstatEGPpower(promote(σ₀, σ₁, ξ₀, ξ₁, κ₀, κ₁)...)
+nonstatEGPpower(σ₀::Integer, σ₁::Integer, ξ₀::Integer, ξ₁::Integer, κ₀::Integer, κ₁::Integer) = nonstatEGPpower(float(σ₀), float(σ₁), float(ξ₀), float(ξ₁), float(κ₀), float(κ₁))
 
-params(d::nonstatEGPpower) = (d.σ, d.ξ₀, d.ξ₁, d.κ₀, d.κ₁)
+params(d::nonstatEGPpower) = (d.σ₀, d.σ₁, d.ξ₀, d.ξ₁, d.κ₀, d.κ₁)
 
 """
     EGPpower(fm::nonstatEGPpower{T}, covariate::Real)
@@ -36,7 +37,7 @@ params(d::nonstatEGPpower) = (d.σ, d.ξ₀, d.ξ₁, d.κ₀, d.κ₁)
 Pour obtenir le modèle stationnaire à partir de la valeur de la variable explicative.
 """
 function EGPpower(fm::nonstatEGPpower{T}, covariate::Real) where T<:Real
-    σ = fm.σ
+    σ = fm.σ₀ + (fm.σ₁ * covariate)
     ξ = fm.ξ₀ + (fm.ξ₁ * covariate)
     κ = fm.κ₀ + (fm.κ₁ * covariate)
     return EGPpower(σ, ξ, κ)
@@ -45,8 +46,9 @@ end
 #### Evaluation
 
 function logpdf(d::nonstatEGPpower{T}, x::Real, covariate::Real) where T<:Real
+    #TODO : assert σ not equals to zero
     μ = 0
-    σ = d.σ
+    σ = d.σ₀ + d.σ₁*covariate
     ξ = d.ξ₀ + d.ξ₁*covariate
     κ = d.κ₀ + d.κ₁*covariate
 
@@ -62,8 +64,9 @@ end
 pdf(d::nonstatEGPpower, x::Real, covariate::Real) = exp(logpdf(d, x, covariate))
 
 function logcdf(d::nonstatEGPpower{T}, x::Real, covariate::Real) where T<:Real
+    #TODO : assert σ not equals to zero
     μ = 0
-    σ = d.σ
+    σ = d.σ₀ + d.σ₁*covariate
     ξ = d.ξ₀ + d.ξ₁*covariate
     κ = d.κ₀ + d.κ₁*covariate
 
@@ -82,7 +85,7 @@ cdf(d::nonstatEGPpower, x::Real, covariate::Real) = exp(logcdf(d, x, covariate))
 function quantile(d::nonstatEGPpower{T}, p::Real, covariate::Real) where T<:Real
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
-    σ = d.σ
+    σ = d.σ₀ + d.σ₁*covariate
     ξ = d.ξ₀ + d.ξ₁*covariate
     κ = d.κ₀ + d.κ₁*covariate
 
@@ -98,8 +101,9 @@ end
 function EGPnonstatpowerfit(data::Array{<:Real,1},
     covariate::Array{<:Real,1};  # Vecteur de la variable explicative
     initialvalues::Vector{<:Real}=Float64[],
-    lowertailcov::Bool=true,  # variable explicative sur κ ?
-    uppertailcov::Bool=true,  # variable explicative sur ξ ?
+    scalecov::Bool=true, # variable explicative sur σ ?
+    lowertailcov::Bool=false,  # variable explicative sur κ ?
+    uppertailcov::Bool=false,  # variable explicative sur ξ ?
     censoring::Real=0)
 
     # TO-DO :
@@ -107,13 +111,13 @@ function EGPnonstatpowerfit(data::Array{<:Real,1},
     # -voir pour ajouter la censure
 
     if isempty(initialvalues)
-        σ₀, ξ₀₀, ξ₁₀, κ₀₀, κ₁₀ = [1, 0.15, 0, 1, 1]
+        σ₀₀, σ₁₀, ξ₀₀, ξ₁₀, κ₀₀, κ₁₀ = [1, 1, 0.15, 0, 1, 1]
     else
-        σ₀, ξ₀₀, ξ₁₀, κ₀₀, κ₁₀ = initialvalues
+        σ₀₀, σ₁₀, ξ₀₀, ξ₁₀, κ₀₀, κ₁₀ = initialvalues
     end
 
-    if !lowertailcov & !uppertailcov
-        return EGPpowerfit(data, initialvalues = [σ₀, ξ₀₀, κ₀₀], censoring = censoring)
+    if !lowertailcov & !uppertailcov & !scalecov
+        return EGPpowerfit(data, initialvalues = [σ₀₀, ξ₀₀, κ₀₀], censoring = censoring)
     else
         r_data = data[data .>= censoring]
         l_data = fill(censoring, count(data .< censoring))
@@ -121,34 +125,78 @@ function EGPnonstatpowerfit(data::Array{<:Real,1},
         r_cov = covariate[data .>= censoring]
         l_cov = covariate[data .< censoring]
 
-        # Modèle avec ξ = ξ₀ + ξ₁*covariate
-        function loglike_xi(σ, ξ₀, ξ₁, κ₀)
-            if σ <= 0 || κ₀ <= 0
+        # Model 1 : covariate on σ only
+        function loglike_sigma(σ₀, σ₁, ξ₀, κ₀)
+            if σ₀*σ₁ <= 0 || κ₀ <= 0
                 return -Inf
             else
-                pd = nonstatEGPpower(σ, ξ₀, ξ₁, κ₀, 0)
+                pd = nonstatEGPpower(σ₀, σ₁, ξ₀, 0, κ₀, 0)
                 #ll = sum(logpdf.(pd, data, covariate))
                 ll = sum(logcdf.(pd, l_data, l_cov)) + sum(logpdf.(pd, r_data, r_cov))
                 return ll
             end
         end
-        # Modèle avec κ = κ₀ + κ₁*covariate
-        function loglike_kappa(σ, ξ₀, κ₀, κ₁)
-            if σ <= 0 || κ₀*κ₁ <= 0
+        # Model 2 : covariate on σ and ξ
+        function loglike_sigma_xi(σ₀, σ₁, ξ₀, ξ₁, κ₀)
+            if σ₀*σ₁ <= 0 || κ₀ <= 0
                 return -Inf
             else
-                pd = nonstatEGPpower(σ, ξ₀, 0, κ₀, κ₁)
+                pd = nonstatEGPpower(σ₀, σ₁, ξ₀, ξ₁, κ₀, 0)
                 #ll = sum(logpdf.(pd, data, covariate))
                 ll = sum(logcdf.(pd, l_data, l_cov)) + sum(logpdf.(pd, r_data, r_cov))
                 return ll
             end
         end
-        # Modèle avec ξ = ξ₀ + ξ₁*covariate et κ = κ₀ + κ₁*covariate
-        function loglike_all(σ, ξ₀, ξ₁, κ₀, κ₁)
-            if σ <= 0 || κ₀*κ₁ <= 0
+        # Model 3 : covariate on σ, ξ and κ
+        function loglike_all(σ₀, σ₁, ξ₀, ξ₁, κ₀, κ₁)
+            if σ₀*σ₁ <= 0 || κ₀*κ₁ <= 0
                 return -Inf
             else
-                pd = nonstatEGPpower(σ, ξ₀, ξ₁, κ₀, κ₁)
+                pd = nonstatEGPpower(σ₀, σ₁, ξ₀, ξ₁, κ₀, κ₁)
+                #ll = sum(logpdf.(pd, data, covariate))
+                ll = sum(logcdf.(pd, l_data, l_cov)) + sum(logpdf.(pd, r_data, r_cov))
+                return ll
+            end
+        end
+        # Model 4 : covariate on σ and κ
+        function loglike_sigma_kappa(σ₀, σ₁, ξ₀, κ₀, κ₁)
+            if σ₀*σ₁ <= 0 || κ₀*κ₁ <= 0
+                return -Inf
+            else
+                pd = nonstatEGPpower(σ₀, σ₁, ξ₀, 0, κ₀, κ₁)
+                #ll = sum(logpdf.(pd, data, covariate))
+                ll = sum(logcdf.(pd, l_data, l_cov)) + sum(logpdf.(pd, r_data, r_cov))
+                return ll
+            end
+        end
+        # Model 5 : covariate on κ only
+        function loglike_kappa(σ₀, ξ₀, κ₀, κ₁)
+            if σ₀ <= 0 || κ₀*κ₁ <= 0
+                return -Inf
+            else
+                pd = nonstatEGPpower(σ₀, 0, ξ₀, 0, κ₀, κ₁)
+                #ll = sum(logpdf.(pd, data, covariate))
+                ll = sum(logcdf.(pd, l_data, l_cov)) + sum(logpdf.(pd, r_data, r_cov))
+                return ll
+            end
+        end
+        # Model 6 : covariate on ξ and κ
+        function loglike_xi_kappa(σ₀, ξ₀, ξ₁, κ₀, κ₁)
+            if σ₀ <= 0 || κ₀*κ₁ <= 0
+                return -Inf
+            else
+                pd = nonstatEGPpower(σ₀, 0, ξ₀, ξ₁, κ₀, κ₁)
+                #ll = sum(logpdf.(pd, data, covariate))
+                ll = sum(logcdf.(pd, l_data, l_cov)) + sum(logpdf.(pd, r_data, r_cov))
+                return ll
+            end
+        end
+        # Model 7 : covariate on ξ only
+        function loglike_xi(σ₀, ξ₀, ξ₁, κ₀)
+            if σ₀ <= 0 || κ₀ <= 0
+                return -Inf
+            else
+                pd = nonstatEGPpower(σ₀, 0, ξ₀, ξ₁, κ₀, 0)
                 #ll = sum(logpdf.(pd, data, covariate))
                 ll = sum(logcdf.(pd, l_data, l_cov)) + sum(logpdf.(pd, r_data, r_cov))
                 return ll
@@ -156,22 +204,48 @@ function EGPnonstatpowerfit(data::Array{<:Real,1},
         end
 
         # Fonctions objectives
-        fobj_1(θ) = -loglike_xi(θ...)
-        fobj_2(θ) = -loglike_kappa(θ...)
+        fobj_1(θ) = -loglike_sigma(θ...)
+        fobj_2(θ) = -loglike_sigma_xi(θ...)
         fobj_3(θ) = -loglike_all(θ...)
+        fobj_4(θ) = -loglike_sigma_kappa(θ...)
+        fobj_5(θ) = -loglike_kappa(θ...)
+        fobj_6(θ) = -loglike_xi_kappa(θ...)
+        fobj_7(θ) = -loglike_xi(θ...)
 
-        if !lowertailcov & uppertailcov  # Modèle avec ξ = ξ₀ + ξ₁*covariate
-            #println("Model 1")
-            res = optimize(fobj_1, [σ₀, ξ₀₀, ξ₁₀, κ₀₀])
-            fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3], Optim.minimizer(res)[4], 0)
-        elseif lowertailcov & !uppertailcov  # Modèle avec κ = κ₀ + κ₁*covariate
-            #println("Model 2")
-            res = optimize(fobj_2, [σ₀, ξ₀₀, κ₀₀, κ₁₀])
-            fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], Optim.minimizer(res)[2], 0, Optim.minimizer(res)[3], Optim.minimizer(res)[4])
-        else  # Modèle avec ξ = ξ₀ + ξ₁*covariate et κ = κ₀ + κ₁*covariate
-            #println("Model 3")
-            res = optimize(fobj_3, [σ₀, ξ₀₀, ξ₁₀, κ₀₀, κ₁₀])
-            fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3], Optim.minimizer(res)[4], Optim.minimizer(res)[5])
+        if !lowertailcov & !uppertailcov & scalecov
+            # Model 1 : covariate on σ only
+            res = optimize(fobj_1, [σ₀₀, σ₁₀ , ξ₀₀, κ₀₀])
+            fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3], 0, Optim.minimizer(res)[4], 0)
+
+        elseif !lowertailcov & uppertailcov & scalecov
+            # Model 2 : covariate on σ and ξ
+            res = optimize(fobj_2, [σ₀₀, σ₁₀ , ξ₀₀, ξ₁₀, κ₀₀])
+            fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3], Optim.minimizer(res)[4], Optim.minimizer(res)[5], 0)
+
+        elseif lowertailcov & uppertailcov & scalecov
+            # Model 3 : covariate on σ, ξ and κ
+            res = optimize(fobj_3, [σ₀₀, σ₁₀, ξ₀₀, ξ₁₀, κ₀₀, κ₁₀])
+            fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3], Optim.minimizer(res)[4], Optim.minimizer(res)[5], Optim.minimizer(res)[6])
+
+        elseif lowertailcov & !uppertailcov & scalecov
+            # Model 4 : covariate on σ and κ
+            res = optimize(fobj_4, [σ₀₀, σ₁₀, ξ₀₀, κ₀₀, κ₁₀])
+            fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3], 0, Optim.minimizer(res)[4], Optim.minimizer(res)[5])
+
+        elseif lowertailcov & !uppertailcov & !scalecov
+            # Model 5 : covariate on κ only
+            res = optimize(fobj_5, [σ₀₀, ξ₀₀, κ₀₀, κ₁₀])
+            fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], 0, Optim.minimizer(res)[2], 0, Optim.minimizer(res)[3], Optim.minimizer(res)[4])
+
+        elseif lowertailcov & uppertailcov & !scalecov
+            # Model 6 : covariate on ξ and κ
+            res = optimize(fobj_6, [σ₀₀, ξ₀₀, ξ₁₀, κ₀₀, κ₁₀])
+            fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], 0, Optim.minimizer(res)[2], Optim.minimizer(res)[3], Optim.minimizer(res)[4], Optim.minimizer(res)[5])
+
+        elseif !lowertailcov & uppertailcov & !scalecov
+            # Model 7 : covariate on ξ only
+            res = optimize(fobj_7, [σ₀₀, ξ₀₀, ξ₁₀, κ₀₀])
+            fittedmodel = nonstatEGPpower(Optim.minimizer(res)[1], 0, Optim.minimizer(res)[2], Optim.minimizer(res)[3], Optim.minimizer(res)[4], 0)
         end
 
         return fittedmodel, EGPpower.(fittedmodel, covariate)
@@ -194,6 +268,7 @@ end
 function BIC(fm::nonstatEGPpower{T}, data::Array{T,1}, covariate::Array{T,1}; censoring::Real=0) where T<:Real
     n = size(data,1)
     k = size(params(fm),1)
+    fm.σ₁ == 0 ? k = k-1 : nothing
     fm.ξ₁ == 0 ? k = k-1 : nothing
     fm.κ₁ == 0 ? k = k-1 : nothing
 
