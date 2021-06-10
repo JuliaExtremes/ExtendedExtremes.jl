@@ -4,7 +4,7 @@ using CSV, Distributions, Extremes, Optim
 using Gadfly
 using TimeSeries
 import Distributions: cdf, insupport, logcdf, logpdf, params, partype, pdf, quantile, sampler
-#import Distributions: qqbuild
+import Extremes: qqplot, probplot, histplot, returnlevelplot, diagnosticplots
 import Random: AbstractRNG
 import Base: maximum, minimum, rand
 
@@ -59,6 +59,11 @@ export
     BIC,
     qqbuild,
     qqplot,
+    ppbuild,
+    probplot,
+    histplot,
+    returnlevelplot,
+    diagnosticplots,
     Guide,
 
     # bias correction
