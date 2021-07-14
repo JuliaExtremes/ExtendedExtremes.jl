@@ -5,7 +5,7 @@
 **working title*, en attendant de trouver quelque chose pour extrêmes sous asymptotiques 😉
 
 
-# Documentation du paquet *EGPD.jl*
+# Documentation de la librairie *EGPD.jl*
 
 ```julia
 using EGPD
@@ -16,18 +16,19 @@ using DataFrames, Distributions, Gadfly;
 
 ### 1.1 Types de distributions
 
-Le paquet EGPD implément les quatres familles paramétriques de Naveau et al. (2016) :
+La librairie EGPD implémente les quatres familles paramétriques de Naveau et al. (2016) et la famille de Gamet et Jalbert (2021):
 
 ```julia
 EGPpower,
 EGPpowermix,
 EGPbeta,
 EGPbetapower,
+EGPnormal
 ```
 
 ### 1.2 Méthodes
 
-Le paquet EGPD étend les méthodes de Distributions.jl. Voici les méthodes incluses dans le paquet :
+La librairie EGPD étend les méthodes de Distributions.jl. Voici les méthodes incluses dans la librairie :
 
 ```julia
 cdf,         # cumulative distribution function
@@ -65,8 +66,6 @@ EGPbetapowerfit
 ```julia
 ?EGPpower()
 ```
-
-
 
 
 ```
