@@ -116,7 +116,7 @@ function EGPbetafit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64
     end
 
     function loglike(σ::Real, ξ::Real, δ::Real)
-        if δ <= 0 || δ > 100 || σ <= 0
+        if δ <= 0 || δ > 100 || σ <= 0 || ξ > 0.99
             return -Inf
         else
             pd = EGPbeta(σ, ξ, δ)
