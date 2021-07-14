@@ -16,6 +16,7 @@ function T_transform(Yc::ContinuousUnivariateDistribution,  # Distribution des d
     return F_Yp  # Valeur de la CDF évaluée au point x
 end
 
+
 """
     T_transform(Yx, Xc, Xc_cov, Xp, Xp_cov, x)  (non-stationnary)
 
@@ -36,148 +37,97 @@ function T_transform(Yc::EGPpower,  # Distribution des données observées pour 
     return F_Yp  # Valeur de la CDF évaluée au point x
 end
 
-
-
-
-
-# """
-#     bias_correct(obs_ts, obs_timevec, sim_ts, sim_timevec, sim_covariate)
-#
-# """
-# function bias_correct(obs_ts::Array{Float64,1},  # Série temporelle des observations
-#                       obs_timevec::Array{Int64,1},  # Vecteur des années associé
-#                       sim_ts::Array{Float64,1},  # Série temporelle des valeurs simulées
-#                       sim_timevec::Array{Int64,1},  # Vecteur des années associé
-#                       sim_covariate::Array{Float64,1};  # Vecteur des covariables ([CO₂])
-#                       censoring_obs::Real=2,
-#                       censoring_sim::Real=1)
-#
-#     # Quelques vérifications de dimensions pour les série temporelle/vecteurs d'années
-#     @assert length(obs_ts) == length(obs_timevec)
-#     @assert length(sim_ts) == length(sim_timevec)
-#     @assert length(sim_ts) == length(sim_covariate)
-#
-#     # On récupère les années
-#     years_obs = unique(obs_timevec)
-#     years_sim = unique(sim_timevec)
-#
-#
-#     # Ajustement des modèles sur les données :
-#     fm_obs = EGPpowerfit(obs_ts, censoring=censoring_obs)  # Ajustement du modèle sur obs (la censure sera un hyperparamètre éventuellement)
-#     fm_sim, fms_sim = EGPpowerfit(sim_ts, sim_covariate, censoring=censoring_sim);  # Ajustement du modèle ns sur simu (la censure sera un hyperparamètre éventuellement)
-#
-#     # Boucle de correction
-#     corrected_ts = Array{Float64}(undef, length(sim_ts))  # Génération d'un vecteur vide de la dimension des valeurs simulées
-#     k=0
-#     for y in years_sim  # Pour chaque année simulée,
-#
-#         # On regarde si cette année existe dans les observations
-#
-#         if y in years_obs  # Si oui,
-#
-#             # On récupère les valeurs simulées pour cette année
-#             idx = sim_timevec .== y
-#             ts_y = sim_ts[idx]
-#             co2_y = unique(sim_covariate[idx])[1]  # ainsi que la [CO₂]
-#
-#             cs = Float64[]  # Vecteur vide pour stocker les valeurs corrigées
-#
-#             for i in ts_y  # Pour chaque valeur simulée,
-#
-#                 cv = cdf(fm_sim, i, co2_y)  # On évalue la probabilité cumulative du modèle en cette valeur
-#
-#                 # On applique Kallache (on cherche la valeur qui fait que les probabilités cumulatives des deux modèles sont égales)
-#                 f(x::Float64) = (cv - T_transform(fm_obs, fm_sim, co2_y, fm_sim, co2_y, x))^2
-#
-#                 # Cela revient à trouver la valeur qui minimise l'écart
-#                 res = optimize(f, 0.0, 250.0)
-#
-#                 # On ajoute cette valeur au vecteur des valeurs corrigées
-#                 push!(cs, Optim.minimizer(res)[1])
-#             end
-#
-#             # On vient ajouter toutes les valeurs pour cette année au grand vecteurs des valeurs simulées
-#             n = length(cs)
-#             for j = 1:n
-#                 corrected_ts[k+j] = cs[j]
-#             end
-#             k += n
-#
-#         elseif y > years_obs[end]  # Si l'année n'existe dans les observations, on est dans le "futur"
-#
-#             # On récupère les valeurs simulées pour cette année
-#             idx = sim_timevec .== y
-#             ts_y = sim_ts[idx]
-#             co2_y = unique(sim_covariate[idx])[1]
-#
-#             # Et les valeurs pour la dernière année observée
-#             idx = sim_timevec .== years_obs[end]
-#             ts_e = sim_ts[idx]
-#             co2_e = unique(sim_covariate[idx])[1]
-#
-#             cs = Float64[]  # Vecteur vide pour stocker les valeurs corrigées
-#
-#             for i in ts_y  # Pour chaque valeur simulée,
-#
-#                 cv = cdf(fm_sim, i, co2_y)  # On évalue la probabilité cumulative du modèle en cette valeur
-#
-#                 # On applique Kallache (on cherche la valeur qui fait que les probabilités cumulatives des deux modèles sont égales)
-#                 f(x::Float64) = (cv - T_transform(fm_obs, fm_sim, co2_e, fm_sim, co2_y, x))^2
-#
-#                 # Cela revient à trouver la valeur qui minimise l'écart
-#                 res = optimize(f, 0.0, 250.0)
-#
-#                 # On ajoute cette valeur au vecteur des valeurs corrigées
-#                 push!(cs, Optim.minimizer(res)[1])
-#             end
-#
-#             # On vient ajouter toutes les valeurs pour cette année au grand vecteurs des valeurs simulées
-#             n = length(cs)
-#             for j = 1:n
-#                 corrected_ts[k+j] = cs[j]
-#             end
-#             k += n
-#         end
-#     end
-#     return corrected_ts  # On retourne le vecteur des valeurs corrigées
-# end
-
+## Bias correction
 
 """
-    bias_correct(obs, sim, sim_covariate)
+    bias_correct(obs, ref, covariate_ref; fut, covariate_fut, censoring_obs, censoring_sim, wet_thresh)
 
 """
-function bias_correct(obs::TimeArray{Float64,1,T,Array{Float64,1}},  # Série temporelle des observations
-                      sim::TimeArray{Float64,1,T,Array{Float64,1}}, # Série temporelle des valeurs simulées
-                      sim_covariate::TimeArray{Float64,1,T,Array{Float64,1}};  # Vecteur des covariables ([CO₂])
-                      censoring_obs::Real=1,
-                      censoring_sim::Real=1) where {T <: TimeType}
+function bias_correct(obs::Array{Float64, 1},
+                ref::Array{Float64, 1},
+                covariate_ref::Array{Float64, 1};
+                fut::Array{Float64, 1}=Float64[],
+                covariate_fut::Array{Float64, 1}=Float64[],
+                censoring_obs::Real=5.0,
+                censoring_sim::Real=5.0,
+                wet_thresh::Float64=1.0)
 
-    # On récupère les années
-    years_obs = unique(year.(timestamp(obs)))
-    years_sim = unique(year.(timestamp(sim)))
+    # Transformation des valeurs en fonction du seuil
+    obs_t = obs[obs .> wet_thresh] .- wet_thresh
 
-    # Ajustement des modèles sur les données :
-    fm_obs = EGPpowerfit(values(obs), censoring=censoring_obs)  # Ajustement du modèle sur obs (la censure sera un hyperparamètre éventuellement)
-    fm_sim, fms_sim = EGPpowerfit(values(sim), values(sim_covariate), censoring=censoring_sim);  # Ajustement du modèle ns sur simu (la censure sera un hyperparamètre éventuellement)
-    fm_sim = collapse(TimeArray(timestamp(sim), fms_sim), year, first)
+    ref_t = ref[ref .> wet_thresh] .- wet_thresh
+    covariate_ref_t = covariate_ref[ref .> wet_thresh]
 
-    # KALLACHE
-    Yc = fill(fm_obs, length(years_sim))
-    Xp = values(fm_sim)
-    Xc = copy(Xp)
-    Xc[years_sim .> last(years_obs)] .= values(when(fm_sim, year, last(years_obs)))[1]
-    Yp = CDFT.(Yc, Xc, Xp)
+    fut_t = fut[fut .> wet_thresh] .- wet_thresh
+    covariate_fut_t = covariate_fut[fut .> wet_thresh]
 
-    # CORRECTION
-    corrected_values = Float64[]
-    sizehint!(corrected_values, length(sim))
-    for i in eachindex(years_sim)
-        x = when(sim, year, years_sim[i]);
-        p = cdf.(Yp[i].Xp, values(x));
-        ŷ = quantile.(Yp[i], p)
-        append!(corrected_values, ŷ)
+    # Ajustement du modèle sur les observations
+    fm_obs = EGPpowerfit(obs_t, censoring=censoring_obs)
+
+    # Fusion des prédictions et des projections pour l'ajustement
+    sim = vcat(ref_t, fut_t)
+    covariate_sim = vcat(covariate_ref_t, covariate_fut_t)
+
+    # Ajustement du modèle sur les simulations
+    fm_sim, fms = EGPpowerfit(sim, censoring=censoring_sim, covariate=covariate_sim, scalecov=false, uppertailcov=true, lowertailcov=false)
+
+    # Correction des prédictions
+    output_ref = similar(ref)
+    output_ref[ref .<= wet_thresh] .= 0.0
+    output_ref[ref .> wet_thresh] = quantile.(fm_obs, cdf.(EGPpower.(fm_sim, covariate_ref_t), ref_t)) .+ wet_thresh
+
+    if !isempty(fut)
+        # Récupération de la CDF des obs pour le futur (Kallache)
+        Yp = CDFT.(Ref(fm_obs), Ref(EGPpower(fm_sim, last(covariate_ref))), EGPpower.(fm_sim, covariate_fut_t))
+        p = cdf.(getfield.(Yp, :Xp), fut_t)
+
+        # Correction des projections
+        output_fut = similar(fut)
+        output_fut[fut .<= wet_thresh] .= 0.0
+        output_fut[fut .> wet_thresh] = quantile.(Yp, p) .+ wet_thresh
+        append!(output_ref, output_fut)
+
     end
+    return output_ref
+end
 
-    return TimeArray(timestamp(sim), corrected_values)
+function bias_correct(obs::Array{Float64, 1},
+                ref::Array{Float64, 1},
+                covariate_ref::Array{Float64, 1},
+                fut::Array{Float64, 1},
+                covariate_fut::Array{Float64, 1};
+                censoring_obs::Real=5.0,
+                censoring_sim::Real=5.0,
+                wet_thresh::Float64=1.0)
+
+    return bias_correct(obs, ref, covariate_ref, fut=fut, covariate_fut=covariate_fut, censoring_obs=censoring_obs, censoring_sim=censoring_sim, wet_thresh=wet_thresh)
+end
+
+function bias_correct(obs::TimeArray{Float64,1,T,Array{Float64,1}},
+                ref::TimeArray{Float64,1,T,Array{Float64,1}},
+                covariate_ref::TimeArray{Float64,1,T,Array{Float64,1}},
+                fut::TimeArray{Float64,1,T,Array{Float64,1}},
+                covariate_fut::TimeArray{Float64,1,T,Array{Float64,1}};
+                censoring_obs::Real=5.0,
+                censoring_sim::Real=5.0,
+                wet_thresh::Float64=1.0) where {T <: TimeType}
+
+    x = bias_correct(values(obs), values(ref), values(covariate_ref), fut=values(fut), covariate_fut=values(covariate_fut), censoring_obs=censoring_obs,
+      censoring_sim=censoring_sim, wet_thresh=wet_thresh)
+    t = vcat(timestamp(ref), timestamp(fut))
+
+    return TimeArray(t, x)
+end
+
+function bias_correct(obs::TimeArray{Float64,1,T,Array{Float64,1}},
+                ref::TimeArray{Float64,1,T,Array{Float64,1}},
+                covariate_ref::TimeArray{Float64,1,T,Array{Float64,1}};
+                censoring_obs::Real=5.0,
+                censoring_sim::Real=5.0,
+                wet_thresh::Float64=1.0) where {T <: TimeType}
+
+    x = bias_correct(values(obs), values(ref), values(covariate_ref), censoring_obs=censoring_obs, censoring_sim=censoring_sim, wet_thresh=wet_thresh)
+    t = timestamp(ref)
+
+    return TimeArray(t, x)
 end
