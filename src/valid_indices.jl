@@ -59,6 +59,16 @@ function index_p98wet(ts::TimeArray)
     return index_pXwet(ts, 0.98)
 end
 
+# P90Wet
+"""
+    index_p90wet(ts::TimeArray)
+
+Returns the 90% percentile of wet days considering days with precipitation above 1 mm.
+"""
+function index_p90wet(ts::TimeArray)
+    return index_pXwet(ts, 0.9)
+end
+
 
 """
     index_pXwetamount(ts::TimeArray, p::Real; wet_thresh=1.0)
@@ -110,4 +120,18 @@ Returns the 20-years return value of heavy precipitation.
 """
 function index_RV20max(ts::TimeArray)
     return index_RVxmax(ts, 20.0)
+end
+
+# SDII
+"""
+    index_SDII(ts::TimeArray)
+
+Returns the precipitation amount in wet days divided by the number of wet days.
+"""
+function index_SDII(ts::TimeArray; thresh::Real=1.0)
+
+    x = values(ts)
+    idx = x .> thresh
+
+    return sum(x[idx]) / length(x[idx])
 end

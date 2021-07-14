@@ -80,6 +80,8 @@ export
     index_pXwetamount,
     index_p98wetamount,
     index_RVxmax,
-    index_RV20max
+    index_RV20max,
+    index_SDII,
+    index_p90wet
 
 end # module
