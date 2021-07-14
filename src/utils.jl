@@ -29,3 +29,7 @@ end
 function BIC(fm::ContinuousUnivariateDistribution, data::TimeArray; censoring::Real=0)
     return BIC(fm, values(data), censoring=censoring)
 end
+
+function window(ts::TimeArray, year_from::Int64, year_to::Int64)
+    return to(from(ts, DateTime(year_from, 01, 01)), DateTime(year_to-1, 12, 31))
+end
