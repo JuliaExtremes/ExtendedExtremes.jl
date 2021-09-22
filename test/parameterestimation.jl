@@ -39,7 +39,7 @@
         data = rand(model, 10000)
 
         # Fit of the first model by maximum likelihood
-        fm = EGPbetapowerfit(data)
+        fm = EGPbetapowerfit(data, initialvalues = [5, 0.15, 2, 2])
 
         # Parameter estimates
         θ̂ = [params(fm)[1]; params(fm)[2]; params(fm)[3]; params(fm)[4]]
