@@ -1,6 +1,8 @@
 # EGPD.jl*
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Build Status](https://app.travis-ci.com/houton199/EGPD.jl.svg?branch=master)](https://app.travis-ci.com/houton199/EGPD.jl)
+[![codecov](https://codecov.io/gh/houton199/EGPD.jl/branch/master/graph/badge.svg?token=7UGVMF0ENE)](https://codecov.io/gh/houton199/EGPD.jl)
 
 **working title*, en attendant de trouver quelque chose pour extrêmes sous asymptotiques 😉
 
@@ -84,7 +86,7 @@ params(d)           # Get the parameters, i.e. (σ, ξ, κ)
 
 Reference :
 
-  * Naveau, P., Huser, R., Ribereau, P., and Hannart, A. ( 2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
+  * Naveau, P., Huser, R., Ribereau, P., and Hannart, A. (2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
 
 
 
@@ -115,7 +117,7 @@ params(d)           # Get the parameters, i.e. (σ, ξ, κ₁, κ₂, p)
 
 Reference :
 
-  * Naveau, P., Huser, R., Ribereau, P., and Hannart, A. ( 2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
+  * Naveau, P., Huser, R., Ribereau, P., and Hannart, A. (2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
 
 
 
@@ -146,7 +148,7 @@ params(d)           # Get the parameters, i.e. (σ, ξ, δ)
 
 Reference :
 
-  * Naveau, P., Huser, R., Ribereau, P., and Hannart, A. ( 2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
+  * Naveau, P., Huser, R., Ribereau, P., and Hannart, A. (2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
 
 
 
@@ -177,7 +179,7 @@ params(d)           # Get the parameters, i.e. (σ, ξ, δ, κ)
 
 Reference :
 
-  * Naveau, P., Huser, R., Ribereau, P., and Hannart, A. ( 2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
+  * Naveau, P., Huser, R., Ribereau, P., and Hannart, A. (2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
 
 
 
