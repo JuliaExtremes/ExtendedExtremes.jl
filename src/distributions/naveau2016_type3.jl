@@ -13,7 +13,7 @@ params(d)           # Get the parameters, i.e. (σ, ξ, δ)
 
 Reference :
 
-* Naveau, P., Huser, R., Ribereau, P., and Hannart, A. ( 2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
+* Naveau, P., Huser, R., Ribereau, P., and Hannart, A. (2016), Modeling jointly low, moderate, and heavy rainfall intensities without a threshold selection, Water Resour. Res., 52, 2753– 2769, doi:10.1002/2015WR018552.
 """
 struct EGPbeta{T<:Real} <: ContinuousUnivariateDistribution
     σ::T    # scale parameter

@@ -1,13 +1,19 @@
 """
-  EGPnormal(σ, ξ, κ)
+    EGPnormal(σ, ξ, κ)
+
 *EGPnormal* corresponds to the extended GP model developed by Gamet and Jalbert (2020), with the truncated normal distribution of mean 1 and variance 1/κ^2.
+
 It is a three parameters family: κ controls the shape of the lower tail, σ is a scale parameter, and ξ controls the rate of upper tail decay.
+
 ```julia
 EGPnormal(σ, ξ, κ)   # EGP of Gamet and Jalbert (2020) with scale parameter σ, rate of upper tail decay ξ and shape of the lower tail κ.
+
 params(d)           # Get the parameters, i.e. (σ, ξ, κ)
 ```
+
 Reference :
-unpublished for now
+
+* Unpublished for now
 """
 struct EGPnormal{T<:Real} <: ContinuousUnivariateDistribution
     σ::T    # scale parameter
