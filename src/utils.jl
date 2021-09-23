@@ -13,6 +13,11 @@ end
     BIC(fm::ContinuousUnivariateDistribution, data::Array{<:Real,1}; censoring::Real=0)
 
 Calculates the Bayesian information criterion (BIC) of the specified model.
+
+```math
+\\textrm{BIC} = \\ln f_{(Y|\\hat{\\theta}_{MV})}(y) - \\frac{k}{2}\\ln{n}
+```
+
 """
 function BIC(fm::ContinuousUnivariateDistribution, data::Array{<:Real,1}; censoring::Real=0)
     n = size(data,1)
