@@ -16,6 +16,8 @@ end
 
 """
     qqplot()
+
+Quantile-Quantile Plot
 """
 function qqplot(qq::QQPair, elements::Gadfly.ElementOrFunction...)
     return plot(x=qq.qx,  # Model
@@ -105,6 +107,8 @@ end
 
 """
     probplot()
+
+Probability plot
 """
 function probplot(pp::PPPair, elements::Gadfly.ElementOrFunction...)
     return plot(x=pp.px,  # Model
@@ -177,6 +181,11 @@ end
 
 ## Histogram Plot
 
+"""
+    histplot(fm::UnivariateDistribution, data::AbstractVector)
+
+Histogram plot
+"""
 function histplot(fm::UnivariateDistribution, data::AbstractVector)
 
     #TODO: arranger max/min pour la grille
@@ -184,7 +193,13 @@ function histplot(fm::UnivariateDistribution, data::AbstractVector)
     nbin = floor(sqrt(length(data)))
     d = layer(x -> pdf(fm, x), 0, maximum(data), Geom.line, Theme(default_color="red"))
     h = layer(x = data, Geom.histogram(density=true, bincount=nbin))
-    return plot(d, h, Coord.cartesian(xmin = minimum(data), xmax = maximum(data)), Guide.xlabel("Data"), Guide.ylabel("Density"), Guide.title("Density Plot"))
+    return plot(d,
+                h,
+                Coord.cartesian(xmin = minimum(data), xmax = maximum(data)),
+                Guide.xlabel("Data"),
+                Guide.ylabel("Density"),
+                Guide.title("Density Plot")
+                )
 end
 
 ## Return Level Plot
@@ -214,12 +229,22 @@ function returnlevelplot_data(fm::UnivariateDistribution, data::AbstractVector)
 
 end
 
+"""
+    returnlevelplot(fm::UnivariateDistribution, data::AbstractVector)
+
+Return level plot
+"""
 function returnlevelplot(fm::UnivariateDistribution, data::AbstractVector)
     y, T, q = returnlevelplot_data(fm, data)
     l1 = layer(x=T, y=q,Geom.line, Theme(default_color="red", line_style=[:dash]))
     l2 = layer(x=T, y=y, Geom.point)
-    return plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"),
-        Guide.title("Return Level Plot"), Theme(discrete_highlight_color=c->nothing))
+    return plot(l1,
+                l2,
+                Scale.x_log10,
+                Guide.xlabel("Return Period"),
+                Guide.ylabel("Return Level"),
+                Guide.title("Return Level Plot"),
+                Theme(discrete_highlight_color=c->nothing))
 end
 
 ## Diagnostic plots
