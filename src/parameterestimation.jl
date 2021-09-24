@@ -1,3 +1,8 @@
+"""
+    EGPpowerfit()
+
+Estimate the first extended GP model of Naveau et al. (2016) parameters by maximum likelihood.
+"""
 function EGPpowerfit(data::Array{<:Real,1};
     initialvalues::Vector{<:Real}=Float64[],
     censoring::Real=0,
@@ -62,6 +67,11 @@ function EGPpowerfit(data::TimeArray;
     end
 end
 
+"""
+    EGPpowermixfit()
+
+Estimate the second extended GP model of Naveau et al. (2016) parameters by maximum likelihood.
+"""
 function EGPpowermixfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64[], censoring::Real=0)
 
     #inner_optimizer = NelderMead()
@@ -108,6 +118,12 @@ function EGPpowermixfit(data::TimeArray; initialvalues::Vector{<:Real}=Float64[]
     return EGPpowermixfit(values(data), initialvalues=initialvalues, censoring=censoring)
 end
 
+
+"""
+    EGPbetafit()
+
+Estimate the third extended GP model of Naveau et al. (2016) parameters by maximum likelihood.
+"""
 function EGPbetafit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64[], censoring::Real=0)
 
     if isempty(initialvalues)
@@ -150,6 +166,12 @@ function EGPbetafit(data::TimeArray; initialvalues::Vector{<:Real}=Float64[], ce
     return EGPbetafit(values(data), initialvalues=initialvalues, censoring=censoring)
 end
 
+
+"""
+    EGPbetapowerfit()
+
+Estimate the fourth extended GP model of Naveau et al. (2016) parameters by maximum likelihood.
+"""
 function EGPbetapowerfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64[], censoring::Real=0)
 
     if isempty(initialvalues)
@@ -192,6 +214,12 @@ function EGPbetapowerfit(data::TimeArray; initialvalues::Vector{<:Real}=Float64[
     return EGPbetapowerfit(values(data), initialvalues=initialvalues, censoring=censoring)
 end
 
+
+"""
+    EGPnormalfit()
+
+Estimate the extended GP model of Gamet and Jalbert (2020) parameters by maximum likelihood.
+"""
 function EGPnormalfit(data::Array{<:Real,1}; initialvalues::Vector{<:Real}=Float64[])
 
     if isempty(initialvalues)
