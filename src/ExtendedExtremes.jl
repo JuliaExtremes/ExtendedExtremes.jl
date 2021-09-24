@@ -1,4 +1,4 @@
-module EGPD
+module ExtendedExtremes
 
 using CSV, Distributions, Extremes, Optim
 using Gadfly
