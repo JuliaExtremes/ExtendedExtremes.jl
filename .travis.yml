@@ -3,6 +3,10 @@ julia:
   - nightly
   - 1.6
 
+jobs:
+  allow_failures:
+    - julia: nightly
+
 notifications:
   email: false
 
