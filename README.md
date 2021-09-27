@@ -18,4 +18,4 @@ julia> Pkg.add("ExtendedExtremes")
 
 ## Documentation 
 
-See the [Package Documentation]() for details and examples.
+See the [Package Documentation](https://houton199.github.io/ExtendedExtremes.jl/dev/) for details and examples.
