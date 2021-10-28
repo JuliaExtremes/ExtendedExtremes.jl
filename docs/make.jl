@@ -17,5 +17,5 @@ makedocs(modules = [ExtendedExtremes, Distributions, Random],
 )
 
 deploydocs(
-        repo = "github.com/houton199/ExtendedExtremes.jl.git",
+        repo = "github.com/JuliaExtremes/ExtendedExtremes.jl.git",
 )
