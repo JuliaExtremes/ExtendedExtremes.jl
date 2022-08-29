@@ -1,87 +1,60 @@
 module ExtendedExtremes
 
-using CSV, Distributions, Extremes, Optim
-using Gadfly
-using TimeSeries
-import Distributions: cdf, insupport, logcdf, logpdf, params, partype, pdf, quantile, sampler
-import Extremes: qqplot, probplot, histplot, returnlevelplot, diagnosticplots
-import Random: AbstractRNG
-import Base: maximum, minimum, rand
+using Distributions
+using Optim
 
-include("parameterestimation.jl")
-include("plots.jl")
-include("utils.jl")
+import Distributions.@check_args
+import Distributions.params
+import Distributions.scale
+import Distributions.shape
+import Distributions.minimum
+import Distributions.maximum
+import Distributions.insupport
+import Distributions.cdf
+import Distributions.logpdf
+import Distributions.pdf
+import Distributions.quantile
+import Distributions.rand
+import Distributions.sampler
+import Distributions.fit_mle
+import Distributions.fit
+import Random: AbstractRNG
 
 # distributions
-include("distributions/naveau2016_type1.jl");
-include("distributions/naveau2016_type1_nonstat.jl");
-include("distributions/naveau2016_type2.jl");
-include("distributions/naveau2016_type3.jl");
-include("distributions/naveau2016_type4.jl");
-include("distributions/EGPnormal.jl");
-include("distributions/kallache2011.jl");
+include("distributions/TruncatedBeta.jl");
+include("distributions/TruncatedNormal.jl");
+include("distributions/Power.jl");
+include("distributions/ExtendedGeneralizedPareto.jl");
 
-# bias correction
-include("biascorrect.jl");
-include("valid_indices.jl")
+include("parameterestimation.jl");
 
 export
     # distribution types
-    EGPpower,
-    EGPpowermix,
-    EGPbeta,
-    EGPbetapower,
-    EGPnormal,
+    TBeta,
+    TNormal,
+    Power,
+    ExtendedGeneralizedPareto,
 
     # methods
-    cdf,         # cumulative distribution function
-    insupport,   # predicate, is x in the support of the distribution?
-    logpdf,      # log probability density
-    logcdf,      # cdf returning log-probability
-    maximum,
-    minimum,
+    EGPtype,
     params,      # get the tuple of parameters
     partype,
+    scale,
+    tailindex,
+    shape,
+    minimum,
+    maximum,
+    insupport,   # predicate, is x in the support of the distribution?
+    getdistribution,
+    #logcdf,      # cdf returning log-probability
+    cdf,         # cumulative distribution function
+    logpdf,      # log probability density
     pdf,         # probability density function
     quantile,    # inverse of cdf (defined for p in (0,1))
     rand,
-    sampler,      # create a Sampler object for efficient samples
-
+    #sampler,      # create a Sampler object for efficient samples
 
     # distribution fitting
-    EGPpowerfit,
-    EGPpowermixfit,
-    EGPbetafit,
-    EGPbetapowerfit,
-    EGPnormalfit,
-
-    # validation
-    BIC,
-    qqbuild,
-    qqplot,
-    ppbuild,
-    probplot,
-    histplot,
-    returnlevelplot,
-    diagnosticplots,
-    Guide,
-
-    # bias correction
-    T_transform,
-    bias_correct,
-    CDFT,
-
-    # validation indices
-    index_skew,
-    index_Rx,
-    index_R10,
-    index_pXwet,
-    index_p98wet,
-    index_pXwetamount,
-    index_p98wetamount,
-    index_RVxmax,
-    index_RV20max,
-    index_SDII,
-    index_p90wet
+    fit_mle
 
 end # module
