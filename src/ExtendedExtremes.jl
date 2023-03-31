@@ -1,7 +1,8 @@
 module ExtendedExtremes
 
-using Distributions
+using Distributions, CSV, DataFrames
 using Optim
+using Gadfly
 
 import Distributions.@check_args
 import Distributions.params

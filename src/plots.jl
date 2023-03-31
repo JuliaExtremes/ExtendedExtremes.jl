@@ -107,10 +107,10 @@ Diagnostic plots
 """
 function diagnosticplots(y::Vector{Float64}, pd::Distribution)::Gadfly.Compose.Context
 
-	f1 = probplot(y, pd)
-	f2 = qqplot(y, pd)
-	f3 = histplot(y, pd)
-    f4 = returnlevelplot(y, pd)
+	f1 = ExtendedExtremes.probplot(y, pd)
+	f2 = ExtendedExtremes.qqplot(y, pd)
+	f3 = ExtendedExtremes.histplot(y, pd)
+    f4 = ExtendedExtremes.returnlevelplot(y, pd)
 
     return gridstack([f1 f2; f3 f4])
 end
