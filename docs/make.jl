@@ -1,17 +1,15 @@
-using Documenter, ExtendedExtremes, Distributions, Random
+using Documenter, ExtendedExtremes, Distributions, Random, Cairo, Fontconfig
 
-makedocs(modules = [ExtendedExtremes, Distributions, Random],
+makedocs(#modules = [ExtendedExtremes, Distributions, Random, Cairo, Fontconfig],
         doctest = false,
         sitename="ExtendedExtremes.jl",
         pages = [
         "index.md",
-        "starting.md",
-        "distributions.md",
-        "fit.md",
-        "diagnostics.md",
+		"Tutorial" =>["Getting started" => "tutorial/index.md",
+					"Extended GP distributions" => "tutorial/distributions.md",
+					"Application: Precipitation" => "tutorial/precipitation.md",
+					"Application: Temperatures" => "tutorial/temperatures.md"],
         "contributing.md",
-        #"Tutorial" =>["Getting started" => "tutorial/index.md"],
-        #"contributing.md",
         "functions.md"
         ]
 )
