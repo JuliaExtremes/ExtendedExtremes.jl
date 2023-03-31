@@ -25,8 +25,8 @@ include("distributions/TruncatedBeta.jl");
 include("distributions/TruncatedNormal.jl");
 include("distributions/Power.jl");
 include("distributions/ExtendedGeneralizedPareto.jl");
-
 include("parameterestimation.jl");
+include("plots.jl")
 
 export
     # distribution types
