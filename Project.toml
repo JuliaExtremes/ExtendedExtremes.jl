@@ -12,5 +12,8 @@ Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
+CSV = "^0.10"
+DataFrames = "^1"
 Distributions = "^0"
+Gadfly = "^1"
 Optim = "^1"
