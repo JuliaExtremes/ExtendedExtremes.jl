@@ -7,8 +7,8 @@ makedocs(#modules = [ExtendedExtremes, Distributions, Random, Cairo, Fontconfig]
         "index.md",
 		"Tutorial" =>["Getting started" => "tutorial/index.md",
 					"Extended GP distributions" => "tutorial/distributions.md",
-					"Application: Precipitation" => "tutorial/precipitation.md",
-					"Application: Temperatures" => "tutorial/temperatures.md"],
+					"Application: Precipitation" => "tutorial/precipitation.md"],
+					#"Application: Temperatures" => "tutorial/temperatures.md"],
         "contributing.md",
         "functions.md"
         ]
