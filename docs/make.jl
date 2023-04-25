@@ -1,4 +1,4 @@
-using Documenter, ExtendedExtremes, Distributions, Random, Cairo, Fontconfig
+using Documenter, Extremes, ExtendedExtremes, Distributions, Gadfly,  Random, Cairo, Fontconfig
 
 makedocs(#modules = [ExtendedExtremes, Distributions, Random, Cairo, Fontconfig],
         doctest = false,
