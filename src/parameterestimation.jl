@@ -1,13 +1,23 @@
-function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initialvalues::Vector{<:Real})
+function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initialvalues::Vector{<:Real}; leftcensoring::Real)
    
     #κ₀, σ₀, ξ₀, = initialvalues
     
     V = EGPtype(pd)
-    
+
+    # Values above the censoring threshold
+    y⁺ = filter( v -> v > leftcensoring, y)
+
+    # Number of values below the censoring threshold
+    n⁻ = count( y .< leftcensoring)
+
     function loglike(κ::Real, σ::Real, ξ::Real)
         if (κ > 0) & (σ > 0)
             pd = ExtendedGeneralizedPareto(V(κ), GeneralizedPareto(σ, ξ))
-            return sum(logpdf.(pd, y))
+            if n⁻ == 0
+                return sum(logpdf.(pd, y⁺))
+            else
+                return sum(logpdf.(pd, y⁺)) + n⁻ * logcdf(pd, leftcensoring)
+            end
         else
             return -Inf
         end
@@ -28,11 +38,11 @@ function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initi
     
 end
 
-function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real})
+function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real} ; leftcensoring::Real=0.)
    
     initialvalues = [1.0, 1.0, 0.0]
     
-    return fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y, initialvalues)
+    return fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y, initialvalues; leftcensoring = leftcensoring)
     
 end
 
