@@ -31,7 +31,7 @@ function getdistribution(pd::TBeta)
    
     α = params(pd)[1]
     
-    a = 1e-8
+    a = 1e-2
     b = 1/2
     
     return LocationScale(-a/(b-a), 1/(b-a), Truncated(Beta(α, α), a, b))

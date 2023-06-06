@@ -1,17 +1,37 @@
-using Distributions, ExtendedExtremes
-
-pd = ExtendedGeneralizedPareto(TBeta(.5), GeneralizedPareto(1, 0))
-
-y = rand(pd, 10000)
-
-fit_mle(ExtendedGeneralizedPareto{TBeta}, y, [.5, 1, 0], leftcensoring = .01)
-
-leftcensoring = 0.
-
-y⁺ = filter( v -> v > leftcensoring, y)
-
-n⁻ = count( y .< leftcensoring)
-
-sum(logpdf.(pd, y⁺)) + n⁻ * logcdf(pd, leftcensoring)
+using CSV, DataFrames, Dates, Distributions, ExtendedExtremes, Extremes, QuantileMatching
 
 
+member = "kdl"
+filename = "/Users/jalbert/Library/CloudStorage/Dropbox/Files/Data/Simulations/CRCM/climex/ClimEx_mtl/$member.csv"
+
+df_sim = CSV.read(filename, DataFrame)
+rename!(df_sim, :Precipitation => :RAW)
+filter!(row ->2000 ≤ year(row.Date) ≤ 2020, df_sim)
+filter!(row -> 5 ≤ month(row.Date) ≤ 10, df_sim)
+first(df_sim, 5)
+
+p = .41
+
+z = collect(skipmissing(df_sim.RAW))
+u = wet_threshold(z, p)
+x = censor(z, u)
+
+df_results = DataFrame(Date = df_sim.Date, RAW = x)
+filter!(row -> row.RAW>0, df_results)
+first(df_results, 5)
+
+x⁺ = df_results.RAW;   
+
+fₐ = fit_mle(ExtendedGeneralizedPareto{TBeta}, x⁺)
+
+QuantileMatching.qqplot(x⁺, fₐ)
+
+
+
+u = quantile(x⁺, .95)
+
+z = x⁺[x⁺ .> u] .-u
+
+pd = Extremes.getdistribution(gpfit(z))[]
+
+QuantileMatching.qqplot(z, pd)
