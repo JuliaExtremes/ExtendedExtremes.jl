@@ -1,13 +1,23 @@
-function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initialvalues::Vector{<:Real})
+
+function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initialvalues::Vector{<:Real}; leftcensoring::Real)
    
-    #κ₀, σ₀, ξ₀, = initialvalues
+    # Values above the censoring threshold
+    y⁺ = filter( v -> v > leftcensoring, y)
+
+    # Number of values below the censoring threshold
+    n⁻ = count( y .< leftcensoring)
     
     V = EGPtype(pd)
     
     function loglike(κ::Real, σ::Real, ξ::Real)
         if (κ > 0) & (σ > 0)
             pd = ExtendedGeneralizedPareto(V(κ), GeneralizedPareto(σ, ξ))
-            return sum(logpdf.(pd, y))
+#             return sum(logpdf.(pd, y)) - (κ - 1.)^2/.1
+            if n⁻ == 0
+                return sum(logpdf.(pd, y⁺)) - (κ - 1.)^2/.1
+            else
+                return sum(logpdf.(pd, y⁺)) - (κ - 1.)^2/.1 + n⁻ * logcdf(pd, leftcensoring)
+            end
         else
             return -Inf
         end
@@ -28,13 +38,55 @@ function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initi
     
 end
 
-function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real})
+function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}; leftcensoring::Real=0.)
    
     initialvalues = [1.0, 1.0, 0.0]
     
-    return fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y, initialvalues)
+    return fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y, initialvalues, leftcensoring = leftcensoring)
     
 end
+
+
+
+
+
+# function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initialvalues::Vector{<:Real})
+   
+#     #κ₀, σ₀, ξ₀, = initialvalues
+    
+#     V = EGPtype(pd)
+    
+#     function loglike(κ::Real, σ::Real, ξ::Real)
+#         if (κ > 0) & (σ > 0)
+#             pd = ExtendedGeneralizedPareto(V(κ), GeneralizedPareto(σ, ξ))
+#             return sum(logpdf.(pd, y))
+#         else
+#             return -Inf
+#         end
+#     end
+
+#     fobj(θ) = -loglike(θ...)
+
+#     res = optimize(fobj, initialvalues)
+
+#     if Optim.converged(res)
+#         κ̂, σ̂, ξ̂ = [Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3]]
+#     else
+#         @warn "The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values."
+#         κ̂, σ̂, ξ̂   = [initialvalues[1], initialvalues[2], initialvalues[3]]
+#     end
+    
+#     return ExtendedGeneralizedPareto(V(κ̂), GeneralizedPareto(σ̂, ξ̂))
+    
+# end
+
+# function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real})
+   
+#     initialvalues = [1.0, 1.0, 0.0]
+    
+#     return fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y, initialvalues)
+    
+# end
 
 # """
 #     EGPpowerfit()

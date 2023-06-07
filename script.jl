@@ -1,7 +1,7 @@
 using CSV, DataFrames, Dates, Distributions, ExtendedExtremes, Extremes, QuantileMatching
 
 
-member = "kdl"
+member = "kda"
 filename = "/Users/jalbert/Library/CloudStorage/Dropbox/Files/Data/Simulations/CRCM/climex/ClimEx_mtl/$member.csv"
 
 df_sim = CSV.read(filename, DataFrame)
@@ -22,16 +22,49 @@ first(df_results, 5)
 
 x⁺ = df_results.RAW;   
 
-fₐ = fit_mle(ExtendedGeneralizedPareto{TBeta}, x⁺)
+fₐ = fit_mle(ExtendedGeneralizedPareto{TBeta}, x⁺, leftcensoring = 0.)
 
 QuantileMatching.qqplot(x⁺, fₐ)
 
 
 
-u = quantile(x⁺, .95)
 
-z = x⁺[x⁺ .> u] .-u
+b = 1/2
+V(a, α) = LocationScale(-a/(b-a), 1/(b-a), Truncated(Beta(α, α), a, b))
 
-pd = Extremes.getdistribution(gpfit(z))[]
+function fobj(θ::AbstractVector{<:Real})
 
-QuantileMatching.qqplot(z, pd)
+    a, α, σ, ξ = θ
+
+    if (0 < a < 1/2) & (α>0)
+
+        pd = ExtendedGeneralizedPareto(V(a, α), GeneralizedPareto(σ, ξ))
+
+        return -sum(logpdf.(pd, x⁺))
+
+    else
+
+        return Inf
+    
+    end
+
+end
+
+res = optimize(fobj, [1/8, 1, 1, 0])
+
+
+â, κ̂, σ̂, ξ̂ = Optim.minimizer(res)
+
+pd = ExtendedGeneralizedPareto(V(â,κ̂), GeneralizedPareto(σ̂, ξ̂))
+
+QuantileMatching.qqplot(x⁺, pd)
+
+
+
+# u = quantile(x⁺, .95)
+
+# z = x⁺[x⁺ .> u] .-u
+
+# pd = Extremes.getdistribution(gpfit(z))[]
+
+# QuantileMatching.qqplot(z, pd)
