@@ -22,7 +22,7 @@ TBeta(a::Real, α::Real) = TBeta(promote(a, α)..., check_args=true)
 
 #### Parameters
 
-params(pd::TBeta) = promote([pd.a, pd.α])
+params(pd::TBeta) = (pd.a, pd.α)
 
 #### Evaluations
 
@@ -32,9 +32,8 @@ insupport(pd::TBeta, x::Real) = minimum(pd) <= x <= maximum(pd)
 
 function getdistribution(pd::TBeta)
    
-    α = params(pd)[1]
-    
-    a = 1/32
+    a, α = params(pd)
+
     b = 1/2
     
     return LocationScale(-a/(b-a), 1/(b-a), Truncated(Beta(α, α), a, b))
