@@ -10,7 +10,7 @@
 
 !!! note
 
-	The *ExtendedExtremes.jl* library is currently being refactored. The 	support for extended generalized Pareto families proposed in Naveau et al. 	(2016) has been abandoned as well as some other functionalities. However, it 	is still possible to find these abandoned features in *ExtendedExtremes.jl* 	[v0.1.1](https://github.com/JuliaExtremes/ExtendedExtremes.jl/releases/tag/	v0.1.1).
+	The *ExtendedExtremes.jl* library is currently being refactored. The 	support for extended generalized Pareto families proposed in Naveau et al. 	(2016) has been abandoned as well as some other functionalities. However, it is still possible to find these abandoned features in *ExtendedExtremes.jl* 	[v0.1.1](https://github.com/JuliaExtremes/ExtendedExtremes.jl/releases/tag/	v0.1.1).
 
 
 

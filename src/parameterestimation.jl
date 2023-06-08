@@ -1,6 +1,4 @@
 function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initialvalues::Vector{<:Real})
-   
-    #κ₀, σ₀, ξ₀, = initialvalues
     
     V = EGPtype(pd)
     
@@ -35,6 +33,45 @@ function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real})
     return fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y, initialvalues)
     
 end
+
+
+
+function fit_mle(pd::Type{<:ExtendedGeneralizedPareto{TBeta}}, y::Vector{<:Real}, initialvalues::Vector{<:Real})
+
+    initialvalues[1] = logit(2*initialvalues[1])
+    initialvalues[2] = log(initialvalues[2])
+    initialvalues[3] = log(initialvalues[3])
+
+    V = EGPtype(pd)
+    
+    function loglike(a::Real, α::Real, σ::Real, ξ::Real)
+        pd = ExtendedGeneralizedPareto(V(.5*logistic(a),exp(α)), GeneralizedPareto(exp(σ), ξ))
+        return sum(logpdf.(pd, y))
+    end
+
+    fobj(θ) = -loglike(θ...)
+
+    res = optimize(fobj, initialvalues)
+
+    if Optim.converged(res)
+        â, α̂, σ̂, ξ̂ = Optim.minimizer(res)
+    else
+        @warn "The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values."
+        â, α̂, σ̂, ξ̂   = initialvalues
+    end
+    
+    return ExtendedGeneralizedPareto(V(.5*logistic(â), exp(α̂)), GeneralizedPareto(exp(σ̂), ξ̂))
+    
+end
+
+function fit_mle(pd::Type{<:ExtendedGeneralizedPareto{TBeta}}, y::Vector{<:Real})
+
+    initialvalues = [1/32, 1.0, 1.0, 0.0]
+
+    return fit_mle(pd::Type{<:ExtendedGeneralizedPareto{TBeta}}, y::Vector{<:Real}, initialvalues::Vector{<:Real})
+
+end
+
 
 # """
 #     EGPpowerfit()
