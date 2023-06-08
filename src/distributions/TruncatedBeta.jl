@@ -3,26 +3,23 @@
 
 """
 struct TBeta{T<:Real} <: ContinuousUnivariateDistribution
-    a::T
     α::T
-    TBeta{T}(a::T, α::T) where {T<:Real} = new{T}(a,α)
+    TBeta{T}(α::T) where {T<:Real} = new{T}(α)
     end
 
-function TBeta(a::T, α::T; check_args=true) where {T <: Real}
-    check_args && @check_args(TBeta, 0<a<1/2,  α > 0 )
-    return TBeta{T}(a, α)
+function TBeta(α::T; check_args=true) where {T <: Real}
+    check_args && @check_args(TBeta, α > 0 )
+    return TBeta{T}(α)
 end
 
 #### Outer constructors
 
-TBeta(α::Real=1.0) = TBeta(1/32, float(α), check_args=true)
-TBeta(α::Int) = TBeta(1/32, float(α), check_args=true)
-TBeta(a::Real, α::Real) = TBeta(promote(a, α)..., check_args=true)
-
+TBeta() = TBeta(1.0, check_args=false)
+TBeta(α::Int) = TBeta(float(α), check_args=false)
 
 #### Parameters
 
-params(pd::TBeta) = (pd.a, pd.α)
+params(pd::TBeta) = promote(pd.α)
 
 #### Evaluations
 
@@ -32,8 +29,9 @@ insupport(pd::TBeta, x::Real) = minimum(pd) <= x <= maximum(pd)
 
 function getdistribution(pd::TBeta)
    
-    a, α = params(pd)
-
+    α = params(pd)[1]
+    
+    a = 1/32
     b = 1/2
     
     return LocationScale(-a/(b-a), 1/(b-a), Truncated(Beta(α, α), a, b))

@@ -1,7 +1,7 @@
 module ExtendedExtremes
 
 using Distributions, CSV, DataFrames
-using Optim, LogExpFunctions
+using Optim
 using Gadfly
 
 import Distributions.@check_args
