@@ -3,23 +3,26 @@
 
 """
 struct TBeta{T<:Real} <: ContinuousUnivariateDistribution
+    a::T
     α::T
-    TBeta{T}(α::T) where {T<:Real} = new{T}(α)
+    TBeta{T}(a::T, α::T) where {T<:Real} = new{T}(a,α)
     end
 
-function TBeta(α::T; check_args=true) where {T <: Real}
-    check_args && @check_args(TBeta, α > 0 )
-    return TBeta{T}(α)
+function TBeta(a::T, α::T; check_args=true) where {T <: Real}
+    check_args && @check_args(TBeta, 0<a<1/2,  α > 0 )
+    return TBeta{T}(a, α)
 end
 
 #### Outer constructors
 
-TBeta() = TBeta(1.0, check_args=false)
-TBeta(α::Int) = TBeta(float(α), check_args=false)
+TBeta(α::Real=1.0) = TBeta(1/32, float(α), check_args=true)
+TBeta(α::Int) = TBeta(1/32, float(α), check_args=true)
+TBeta(a::Real, α::Real) = TBeta(promote(a, α)..., check_args=true)
+
 
 #### Parameters
 
-params(pd::TBeta) = promote(pd.α)
+params(pd::TBeta) = promote([pd.a, pd.α])
 
 #### Evaluations
 

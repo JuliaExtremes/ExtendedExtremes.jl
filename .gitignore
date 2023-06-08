@@ -7,3 +7,5 @@ docs/site/
 .vscode/
 .DS_Store
 Manifest.toml
+
+script.jl
