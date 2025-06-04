@@ -1,7 +1,7 @@
 name = "ExtendedExtremes"
 uuid = "c3d6fec6-66cc-479b-b3f2-8ef84979700f"
 authors = ["Gabriel Gobeil <gabriel.gobeil199@gmail.com>", "Jonathan Jalbert <jonathan.jalbert@polymtl.ca>"]
-version = "0.3.0"
+version = "0.3.1"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
