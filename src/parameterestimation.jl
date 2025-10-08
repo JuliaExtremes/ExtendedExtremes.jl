@@ -1,5 +1,5 @@
 function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initialvalues::Vector{<:Real}; leftcensoring::Real)
-    
+    # Only works for a single parameter V distribution
     ν₀, ϕ₀, ξ₀ = log(initialvalues[1]), log(initialvalues[2]), initialvalues[3]
     
     V = EGPtype(pd)
@@ -14,9 +14,9 @@ function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initi
         κ, σ = exp(ν), exp(ϕ)
         pd = ExtendedGeneralizedPareto(V(κ), GeneralizedPareto(σ, ξ))
         if n⁻ == 0
-            return sum(logpdf.(pd, y⁺)) - (κ - 1.)^2/.1
+            return sum(logpdf.(pd, y⁺))
         else
-            return sum(logpdf.(pd, y⁺)) - (κ - 1.)^2/.1 + n⁻ * logcdf(pd, leftcensoring)
+            return sum(logpdf.(pd, y⁺)) + n⁻ * logcdf(pd, leftcensoring)
         end
     end
 
