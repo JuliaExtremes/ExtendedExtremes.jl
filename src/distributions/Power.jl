@@ -43,6 +43,14 @@ function cdf(pd::Power, x::Real)
     
 end
 
+function logcdf(pd::Power, x::Real)
+   
+    td = getdistribution(pd)
+    
+    return logcdf(td, x)
+    
+end
+
 function logpdf(pd::Power, x::Real)
    
     td = getdistribution(pd)
