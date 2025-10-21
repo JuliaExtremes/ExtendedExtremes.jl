@@ -59,6 +59,14 @@ function logpdf(pd::Power, x::Real)
     
 end
 
+function loglikelihood(pd::Power, x::Vector{<:Real})
+   
+    κ = first(params(pd))
+    n = length(y)
+    s = sum(log, x)
+    return n*log(κ) + (κ - 1)*s 
+end
+
 function pdf(pd::Power, x::Real)
    
     td = getdistribution(pd)

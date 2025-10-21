@@ -12,6 +12,7 @@ import Distributions.minimum
 import Distributions.maximum
 import Distributions.insupport
 import Distributions.cdf
+import Distributions.loglikelihood
 import Distributions.logpdf
 import Distributions.pdf
 import Distributions.quantile
