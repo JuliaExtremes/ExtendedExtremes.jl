@@ -1,7 +1,7 @@
 name = "ExtendedExtremes"
 uuid = "c3d6fec6-66cc-479b-b3f2-8ef84979700f"
-authors = ["Gabriel Gobeil <gabriel.gobeil199@gmail.com>", "Jonathan Jalbert <jonathan.jalbert@polymtl.ca>"]
 version = "0.3.1"
+authors = ["Gabriel Gobeil <gabriel.gobeil199@gmail.com>", "Jonathan Jalbert <jonathan.jalbert@polymtl.ca>"]
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -10,6 +10,7 @@ Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Gadfly = "c91e804a-d5a3-530f-b6f0-dfbca275c004"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 CSV = "^0.10"
@@ -17,4 +18,5 @@ DataFrames = "^1"
 Distributions = "0.23 - 0.25"
 Gadfly = "^1"
 Optim = "^1"
+StaticArrays = "1.9.18"
 julia = "1"

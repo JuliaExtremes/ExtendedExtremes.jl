@@ -34,6 +34,7 @@ insupport(pd::TNormal, x::Real) = minimum(pd) <= x <= maximum(pd)
 getdistribution(pd::TNormal) = pd._dist
 
 @inline cdf(pd::TNormal, x::Real) = cdf(pd._dist, x)
+@inline logcdf(pd::TNormal, x::Real) = logcdf(pd._dist, x)
 @inline logpdf(pd::TNormal, x::Real) = logpdf(pd._dist, x)
 @inline pdf(pd::TNormal, x::Real) = pdf(pd._dist, x)
 @inline quantile(pd::TNormal, p::Real) = quantile(pd._dist, p)

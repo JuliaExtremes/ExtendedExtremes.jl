@@ -3,6 +3,7 @@ module ExtendedExtremes
 using Distributions, CSV, DataFrames
 using Optim
 using Gadfly
+using StaticArrays
 
 import Distributions.@check_args
 import Distributions.params
