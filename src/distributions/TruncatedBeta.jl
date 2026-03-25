@@ -2,10 +2,16 @@
     TBeta(α)
 
 """
-struct TBeta{T<:Real} <: ContinuousUnivariateDistribution
+struct TBeta{T<:Real, D} <: ContinuousUnivariateDistribution
     α::T
-    TBeta{T}(α::T) where {T<:Real} = new{T}(α)
+    _dist::D
+    function TBeta{T}(α::T) where {T<:Real}
+        a = one(T) / T(32)
+        b = one(T) / T(2)
+        dist = LocationScale(-a/(b-a), one(T)/(b-a), Truncated(Beta(α, α), a, b))
+        return new{T, typeof(dist)}(α, dist)
     end
+end
 
 function TBeta(α::T; check_args=true) where {T <: Real}
     check_args && @check_args(TBeta, α > 0 )
@@ -27,52 +33,10 @@ minimum(::TBeta) = 0.0
 maximum(::TBeta) = 1.0
 insupport(pd::TBeta, x::Real) = minimum(pd) <= x <= maximum(pd)
 
-function getdistribution(pd::TBeta)
-   
-    α = params(pd)[1]
-    
-    a = 1/32
-    b = 1/2
-    
-    return LocationScale(-a/(b-a), 1/(b-a), Truncated(Beta(α, α), a, b))
-    
-end
+getdistribution(pd::TBeta) = pd._dist
 
-function cdf(pd::TBeta, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return cdf(td, x)
-    
-end
-
-function logpdf(pd::TBeta, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return logpdf(td, x)
-    
-end
-
-function pdf(pd::TBeta, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return pdf(td, x)
-    
-end
-
-function quantile(pd::TBeta, p::Real)
-    
-    td = getdistribution(pd)
-    
-    return quantile(td, p)
-    
-end
-
-function rand(rng::AbstractRNG, pd::TBeta)
-    
-    td = getdistribution(pd)
-
-    return rand(rng, td)
-end
+@inline cdf(pd::TBeta, x::Real) = cdf(pd._dist, x)
+@inline logpdf(pd::TBeta, x::Real) = logpdf(pd._dist, x)
+@inline pdf(pd::TBeta, x::Real) = pdf(pd._dist, x)
+@inline quantile(pd::TBeta, p::Real) = quantile(pd._dist, p)
+@inline rand(rng::AbstractRNG, pd::TBeta) = rand(rng, pd._dist)

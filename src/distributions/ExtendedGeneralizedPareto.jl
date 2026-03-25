@@ -32,28 +32,23 @@ minimum(pd::ExtendedGeneralizedPareto) = minimum(pd.G)
 maximum(pd::ExtendedGeneralizedPareto) = maximum(pd.G)
 insupport(pd::ExtendedGeneralizedPareto, x::Real) = minimum(pd) <= x <= maximum(pd)
 
-function cdf(pd::ExtendedGeneralizedPareto, x::Real)
-   
+@inline function cdf(pd::ExtendedGeneralizedPareto, x::Real)
     b = cdf(pd.G, x)
-    
     return cdf(pd.V, b)
-    
 end
 
-function logpdf(pd::ExtendedGeneralizedPareto, x::Real)
-    
+@inline function logcdf(pd::ExtendedGeneralizedPareto, x::Real)
     b = cdf(pd.G, x)
-
-    logdensity = logpdf(pd.V, b) + logpdf(pd.G, x)
-       
-    return logdensity
-    
+    return logcdf(pd.V, b)
 end
 
-function pdf(pd::ExtendedGeneralizedPareto, x::Real)
-   
+@inline function logpdf(pd::ExtendedGeneralizedPareto, x::Real)
+    b = cdf(pd.G, x)
+    return logpdf(pd.V, b) + logpdf(pd.G, x)
+end
+
+@inline function pdf(pd::ExtendedGeneralizedPareto, x::Real)
     return exp(logpdf(pd, x))
-    
 end
 
 function quantile(pd::ExtendedGeneralizedPareto, p::Real)

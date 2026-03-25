@@ -8,15 +8,23 @@ function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initi
     y⁺ = filter( v -> v > leftcensoring, y)
 
     # Number of values below the censoring threshold
-    n⁻ = count( y .< leftcensoring)
+    n⁻ = count(v -> v < leftcensoring, y)
 
     function loglike(ν::Real, ϕ::Real, ξ::Real)
         κ, σ = exp(ν), exp(ϕ)
-        pd = ExtendedGeneralizedPareto(V(κ), GeneralizedPareto(σ, ξ))
+        Vd = V(κ)
+        Gd = GeneralizedPareto(σ, ξ)
+        ll = 0.0
+        @inbounds for yi in y⁺
+            b = cdf(Gd, yi)
+            ll += logpdf(Vd, b) + logpdf(Gd, yi)
+        end
+        penalty = expm1(ν)^2 / 0.1
         if n⁻ == 0
-            return sum(logpdf.(pd, y⁺)) - (κ - 1.)^2/.1
+            return ll - penalty
         else
-            return sum(logpdf.(pd, y⁺)) - (κ - 1.)^2/.1 + n⁻ * logcdf(pd, leftcensoring)
+            b_cens = cdf(Gd, leftcensoring)
+            return ll - penalty + n⁻ * logcdf(Vd, b_cens)
         end
     end
 
@@ -25,10 +33,10 @@ function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initi
     res = optimize(fobj, [ν₀, ϕ₀, ξ₀])
 
     if Optim.converged(res)
-        ν̂, ϕ̂, ξ̂ = [Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3]]
+        ν̂, ϕ̂, ξ̂ = Optim.minimizer(res)
     else
         @warn "The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values."
-        ν̂, ϕ̂, ξ̂   = [initialvalues[1], initialvalues[2], initialvalues[3]]
+        ν̂, ϕ̂, ξ̂   = initialvalues[1], initialvalues[2], initialvalues[3]
     end
     
     κ̂, σ̂ = exp(ν̂), exp(ϕ̂)
