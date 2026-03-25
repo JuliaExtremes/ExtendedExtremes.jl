@@ -2,10 +2,14 @@
     TNormal(κ)
 
 """
-struct TNormal{T<:Real} <: ContinuousUnivariateDistribution
+struct TNormal{T<:Real, D} <: ContinuousUnivariateDistribution
     κ::T
-    TNormal{T}(κ::T) where {T<:Real} = new{T}(κ)
+    _dist::D
+    function TNormal{T}(κ::T) where {T<:Real}
+        dist = Truncated(Normal(one(T), sqrt(one(T)/κ)), zero(T), one(T))
+        return new{T, typeof(dist)}(κ, dist)
     end
+end
 
 function TNormal(κ::T; check_args=true) where {T <: Real}
     check_args && @check_args(TNormal, κ > 0)
@@ -27,49 +31,11 @@ minimum(::TNormal) = 0.0
 maximum(::TNormal) = 1.0
 insupport(pd::TNormal, x::Real) = minimum(pd) <= x <= maximum(pd)
 
-function getdistribution(pd::TNormal)
-   
-    κ = params(pd)[1]
-    
-    return Truncated(Normal(1, sqrt(1/κ)), 0, 1)
-    
-end
+getdistribution(pd::TNormal) = pd._dist
 
-function cdf(pd::TNormal, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return cdf(td, x)
-    
-end
-
-function logpdf(pd::TNormal, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return logpdf(td, x)
-    
-end
-
-function pdf(pd::TNormal, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return pdf(td, x)
-    
-end
-
-function quantile(pd::TNormal, p::Real)
-    
-    td = getdistribution(pd)
-    
-    return quantile(td, p)
-    
-end
-
-function rand(rng::AbstractRNG, pd::TNormal)
-    
-    td = getdistribution(pd)
-
-    return rand(rng, td)
-end
+@inline cdf(pd::TNormal, x::Real) = cdf(pd._dist, x)
+@inline logcdf(pd::TNormal, x::Real) = logcdf(pd._dist, x)
+@inline logpdf(pd::TNormal, x::Real) = logpdf(pd._dist, x)
+@inline pdf(pd::TNormal, x::Real) = pdf(pd._dist, x)
+@inline quantile(pd::TNormal, p::Real) = quantile(pd._dist, p)
+@inline rand(rng::AbstractRNG, pd::TNormal) = rand(rng, pd._dist)

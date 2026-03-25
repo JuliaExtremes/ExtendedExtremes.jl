@@ -27,49 +27,40 @@ minimum(::Power) = 0.0
 maximum(::Power) = 1.0
 insupport(pd::Power, x::Real) = minimum(pd) <= x <= maximum(pd)
 
-function getdistribution(pd::Power)
-   
-    κ = params(pd)[1]
-    
-    return Beta(κ, 1)
-    
+# Kept for API compatibility
+getdistribution(pd::Power) = Beta(pd.κ, 1)
+
+# Direct closed-form expressions for Beta(κ, 1)
+@inline function cdf(pd::Power, x::Real)
+    x <= 0 && return 0.0
+    x >= 1 && return 1.0
+    return x^pd.κ
 end
 
-function cdf(pd::Power, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return cdf(td, x)
-    
+@inline function logcdf(pd::Power, x::Real)
+    x <= 0 && return -Inf
+    x >= 1 && return 0.0
+    return pd.κ * log(x)
 end
 
-function logpdf(pd::Power, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return logpdf(td, x)
-    
+@inline function logpdf(pd::Power, x::Real)
+    κ = pd.κ
+    (x < 0 || x > 1) && return -Inf
+    x == 0 && return κ > 1 ? -Inf : (κ < 1 ? Inf : 0.0)
+    return log(κ) + (κ - 1) * log(x)
 end
 
-function pdf(pd::Power, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return pdf(td, x)
-    
+@inline function pdf(pd::Power, x::Real)
+    κ = pd.κ
+    (x < 0 || x > 1) && return 0.0
+    x == 0 && κ > 1 && return 0.0
+    return κ * x^(κ - 1)
 end
 
-function quantile(pd::Power, p::Real)
-    
-    td = getdistribution(pd)
-    
-    return quantile(td, p)
-    
+@inline function quantile(pd::Power, p::Real)
+    return p^(1 / pd.κ)
 end
 
-function rand(rng::AbstractRNG, pd::Power)
-    
-    td = getdistribution(pd)
-
-    return rand(rng, td)
+@inline function rand(rng::AbstractRNG, pd::Power)
+    return rand(rng)^(1 / pd.κ)
 end

@@ -1,3 +1,23 @@
+# Compute cdf and logpdf of GeneralizedPareto(0, σ, ξ) simultaneously,
+# sharing the intermediate z = 1 + ξ·x/σ and log(z) computation.
+@inline function _gp_cdf_logpdf(log_σ::Real, inv_σ::Real, ξ::Real, x::Real)
+    if abs(ξ) < 1e-12
+        # Exponential limit: ξ → 0
+        t = x * inv_σ
+        return (-expm1(-t), -log_σ - t)
+    else
+        z = muladd(ξ, x * inv_σ, 1.0)
+        if z ≤ 0.0
+            return (1.0, -Inf)
+        end
+        inv_ξ = inv(ξ)
+        log_z = log(z)
+        cdf_val = -expm1(-inv_ξ * log_z)
+        logpdf_val = -log_σ - muladd(inv_ξ, log_z, log_z)
+        return (cdf_val, logpdf_val)
+    end
+end
+
 function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initialvalues::Vector{<:Real}; leftcensoring::Real)
     
     ν₀, ϕ₀, ξ₀ = log(initialvalues[1]), log(initialvalues[2]), initialvalues[3]
@@ -8,27 +28,38 @@ function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initi
     y⁺ = filter( v -> v > leftcensoring, y)
 
     # Number of values below the censoring threshold
-    n⁻ = count( y .< leftcensoring)
+    n⁻ = count(v -> v < leftcensoring, y)
 
-    function loglike(ν::Real, ϕ::Real, ξ::Real)
-        κ, σ = exp(ν), exp(ϕ)
-        pd = ExtendedGeneralizedPareto(V(κ), GeneralizedPareto(σ, ξ))
+    function loglike(θ)
+        ν, ϕ, ξ = θ[1], θ[2], θ[3]
+        κ = exp(ν)
+        σ = exp(ϕ)
+        inv_σ = inv(σ)
+        log_σ = ϕ  # since σ = exp(ϕ), log(σ) = ϕ
+        Vd = V(κ)
+        ll = 0.0
+        @inbounds for yi in y⁺
+            b, lp_gp = _gp_cdf_logpdf(log_σ, inv_σ, ξ, yi)
+            ll += logpdf(Vd, b) + lp_gp
+        end
+        penalty = expm1(ν)^2 * 10.0
         if n⁻ == 0
-            return sum(logpdf.(pd, y⁺)) - (κ - 1.)^2/.1
+            return ll - penalty
         else
-            return sum(logpdf.(pd, y⁺)) - (κ - 1.)^2/.1 + n⁻ * logcdf(pd, leftcensoring)
+            b_cens, _ = _gp_cdf_logpdf(log_σ, inv_σ, ξ, leftcensoring)
+            return ll - penalty + n⁻ * logcdf(Vd, b_cens)
         end
     end
 
-    fobj(θ) = -loglike(θ...)
+    fobj(θ) = -loglike(θ)
 
-    res = optimize(fobj, [ν₀, ϕ₀, ξ₀])
+    res = optimize(fobj, MVector(ν₀, ϕ₀, ξ₀))
 
     if Optim.converged(res)
-        ν̂, ϕ̂, ξ̂ = [Optim.minimizer(res)[1], Optim.minimizer(res)[2], Optim.minimizer(res)[3]]
+        ν̂, ϕ̂, ξ̂ = Optim.minimizer(res)
     else
         @warn "The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values."
-        ν̂, ϕ̂, ξ̂   = [initialvalues[1], initialvalues[2], initialvalues[3]]
+        ν̂, ϕ̂, ξ̂   = initialvalues[1], initialvalues[2], initialvalues[3]
     end
     
     κ̂, σ̂ = exp(ν̂), exp(ϕ̂)

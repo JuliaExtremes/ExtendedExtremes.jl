@@ -3,6 +3,7 @@ module ExtendedExtremes
 using Distributions, CSV, DataFrames
 using Optim
 using Gadfly
+using StaticArrays
 
 import Distributions.@check_args
 import Distributions.params
@@ -12,6 +13,7 @@ import Distributions.minimum
 import Distributions.maximum
 import Distributions.insupport
 import Distributions.cdf
+import Distributions.logcdf
 import Distributions.logpdf
 import Distributions.pdf
 import Distributions.quantile
