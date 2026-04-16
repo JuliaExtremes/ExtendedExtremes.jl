@@ -12,6 +12,7 @@ function Power(κ::T; check_args=true) where {T <: Real}
     return Power{T}(κ)
 end
 
+
 #### Outer constructors
 
 Power() = Power(1.0, check_args=false)
@@ -28,23 +29,32 @@ maximum(::Power) = 1.0
 insupport(pd::Power, x::Real) = minimum(pd) <= x <= maximum(pd)
 
 function cdf(pd::Power, x::Real)
-    return exp(logcdf(pd, x))
+    x <= 0. && return 0.0
+    x >= 1. && return 1.0
+    return x^pd.κ
 end
 
 function logcdf(pd::Power, x::Real)
-    κ = first(params(pd))
-    temp = x < zero(x) ? oftype(x, -Inf) : κ*log(x)
-    return x > one(x) ? zero(x) : temp
+    x <= 0. && return -Inf
+    x >= 1 && return 0.0
+    return pd.κ * log(x)
 end
 
 function logpdf(pd::Power, x::Real)
-    κ = first(params(pd))
-    p = log(κ) + (κ - 1.)*log(x)
-    return (zero(x) < x < one(x)) ? oftype(p, -Inf) : p
+    κ = pd.κ
+    (0. < x < 1.) && return -Inf
+    x == 0. && return κ > 1. ? -Inf : (κ < 1. ? Inf : 0.0)
+    return log(κ) + (κ - 1) * log(x)
 end
 
+function pdf(pd::Power, x::Real)
+    κ = pd.κ
+    (0. < x < 1.) && return 0.0
+    x == 0. && κ > 1. && return 0.0
+    return κ * x^(κ - 1.)
+
 function loglikelihood(pd::Power, x::Vector{<:Real})
-    κ = first(params(pd))
+    κ = pd.κ
     n = length(x)
     s = sum(log, x)
     return n*log(κ) + (κ - 1.)*s 
@@ -52,12 +62,9 @@ end
 
 function quantile(pd::Power, p::Real)
     @assert zero(p) < p < one(p)
-    κ = first(params(pd))
-    return p^(1. / κ)    
+    return p^(1. / pd.κ)    
 end
 
 function rand(rng::AbstractRNG, pd::Power)
-    κ = first(params(pd))
-    dist = Beta(κ, 1.)
-    return rand(rng, dist)
+    return rand(rng)^(1. / pd.κ)
 end
