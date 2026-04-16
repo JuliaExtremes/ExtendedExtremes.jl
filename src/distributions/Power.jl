@@ -52,6 +52,7 @@ function pdf(pd::Power, x::Real)
     (0. < x < 1.) && return 0.0
     x == 0. && κ > 1. && return 0.0
     return κ * x^(κ - 1.)
+end
 
 function loglikelihood(pd::Power, x::Vector{<:Real})
     κ = pd.κ
