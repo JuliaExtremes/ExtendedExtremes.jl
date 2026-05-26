@@ -40,7 +40,7 @@ end
 function logpdf(pd::Power, x::Real)
     κ = first(params(pd))
     p = log(κ) + (κ - 1.)*log(x)
-    return (zero(x) < x < one(x)) ? oftype(p, -Inf) : p
+    return (zero(x) < x < one(x)) ? p : oftype(p, -Inf)
 end
 
 function loglikelihood(pd::Power, x::Vector{<:Real})
