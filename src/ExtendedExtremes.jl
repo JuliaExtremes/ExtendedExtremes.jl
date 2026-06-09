@@ -12,6 +12,7 @@ import Distributions.minimum
 import Distributions.maximum
 import Distributions.insupport
 import Distributions.cdf
+import Distributions.logcdf  # pour fit_mle
 import Distributions.loglikelihood
 import Distributions.logpdf
 import Distributions.pdf
@@ -49,7 +50,7 @@ export
     maximum,
     insupport,   # predicate, is x in the support of the distribution?
     getdistribution,
-    #logcdf,      # cdf returning log-probability
+    logcdf,      # cdf returning log-probability
     cdf,         # cumulative distribution function
     logpdf,      # log probability density
     pdf,         # probability density function
