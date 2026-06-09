@@ -27,52 +27,80 @@ minimum(::TBeta) = 0.0
 maximum(::TBeta) = 1.0
 insupport(pd::TBeta, x::Real) = minimum(pd) <= x <= maximum(pd)
 
-function getdistribution(pd::TBeta)
-   
-    α = params(pd)[1]
-    
-    a = 1/32
-    b = 1/2
-    
-    return LocationScale(-a/(b-a), 1/(b-a), Truncated(Beta(α, α), a, b))
-    
-end
 
 function cdf(pd::TBeta, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return cdf(td, x)
-    
+    κ = pd.α
+
+    if x <= 0
+        return 0.0
+    elseif x >= 1
+        return 1.0
+    end
+
+    a = 1 / 32
+    b = 1 / 2
+    width = b - a
+
+    w = a + width * x
+
+    beta = Beta(κ, κ)
+
+    Fa = cdf(beta, a)
+    Fw = cdf(beta, w)
+
+    Z = 1 / 2 - Fa
+
+    return (Fw - Fa) / Z
 end
 
 function logpdf(pd::TBeta, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return logpdf(td, x)
-    
-end
+    κ = pd.α
 
-function pdf(pd::TBeta, x::Real)
-   
-    td = getdistribution(pd)
-    
-    return pdf(td, x)
-    
+    if x < 0 || x > 1
+        return -Inf
+    end
+
+    a = 1 / 32
+    width = 1/2 - a
+
+    w = a + width * x
+
+    pd = Beta(κ, κ)
+
+    Fa = cdf(pd, a)
+    Z = 1 / 2 - Fa
+
+    return log(width) + logpdf(beta, w) - log(Z)
 end
 
 function quantile(pd::TBeta, p::Real)
-    
-    td = getdistribution(pd)
-    
-    return quantile(td, p)
-    
+    κ = pd.α
+
+    if p < 0 || p > 1
+        throw(ArgumentError("p must be in [0, 1]"))
+    elseif p == 0
+        return 0.0
+    elseif p == 1
+        return 1.0
+    end
+
+    a = 1 / 32
+    width = 1/2 - a
+
+    pd= Beta(κ, κ)
+
+    Fa = cdf(pd, a)
+    Fb = 1 / 2
+
+    w = quantile(pd, Fa + p * (Fb - Fa))
+
+    return (w - a) / width
 end
+
 
 function rand(rng::AbstractRNG, pd::TBeta)
-    
-    td = getdistribution(pd)
-
-    return rand(rng, td)
+    u = rand(rng)
+    return quantile(pd, u)
 end
+
+rand(pd::TBeta) = rand(Random.default_rng(), pd)
