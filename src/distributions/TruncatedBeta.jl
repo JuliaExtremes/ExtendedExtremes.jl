@@ -43,10 +43,10 @@ function cdf(pd::TBeta, x::Real)
 
     w = a + width * x
 
-    beta = Beta(κ, κ)
+    dist = Beta(κ, κ)
 
-    Fa = cdf(beta, a)
-    Fw = cdf(beta, w)
+    Fa = cdf(dist, a)
+    Fw = cdf(dist, w)
 
     Z = 1 / 2 - Fa
 
@@ -65,12 +65,12 @@ function logpdf(pd::TBeta, x::Real)
 
     w = a + width * x
 
-    pd = Beta(κ, κ)
+    dist = Beta(κ, κ)
 
-    Fa = cdf(pd, a)
+    Fa = cdf(dist, a)
     Z = 1 / 2 - Fa
 
-    return log(width) + logpdf(beta, w) - log(Z)
+    return log(width) + logpdf(dist , w) - log(Z)
 end
 
 function quantile(pd::TBeta, p::Real)
@@ -87,12 +87,12 @@ function quantile(pd::TBeta, p::Real)
     a = 1 / 32
     width = 1/2 - a
 
-    pd= Beta(κ, κ)
+    dist = Beta(κ, κ)
 
-    Fa = cdf(pd, a)
+    Fa = cdf(dist, a)
     Fb = 1 / 2
 
-    w = quantile(pd, Fa + p * (Fb - Fa))
+    w = quantile(dist, Fa + p * (Fb - Fa))
 
     return (w - a) / width
 end
