@@ -1,5 +1,9 @@
 # Release Notes
 
+## Nightly
+
+- Improve computation performance of `logpdf()` for the TBeta distribution. It is not relying anymore on `Truncated()` and `LocationScale()` by implementing directly the log-density.   
+
 ## 0.3.2
 
 - Corrected the censored likelihood function.
