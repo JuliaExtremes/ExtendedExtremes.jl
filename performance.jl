@@ -17,3 +17,19 @@ y = rand(Random.seed!(1), pd, 5000)
 @time logpdf(pd, y); @time logpdf(pd, y);
 
 @time fd = fit_mle(ExtendedGeneralizedPareto{TBeta}, y); @time fit_mle(ExtendedGeneralizedPareto{TBeta}, y);
+
+
+
+
+
+
+@time logpdf(pd, y); @time logpdf(pd,y);
+
+function f(pd::ExtendedGeneralizedPareto, y::AbstractArray{<:Real})
+    ℓ = 0.
+    for yᵢ in y
+        ℓ += logpdf(pd, yᵢ)
+    end
+end
+
+@time f(pd, y); @time f(pd,y);
