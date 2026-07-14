@@ -14,8 +14,8 @@ end
 
 #### Outer constructors
 
-TNormal() = TNormal(1.0, check_args=false)
-TNormal(κ::Int) = TNormal(float(κ), check_args=false)
+TNormal() = TNormal(1.0)
+TNormal(κ::Int) = TNormal(float(κ))
 
 #### Parameters
 
