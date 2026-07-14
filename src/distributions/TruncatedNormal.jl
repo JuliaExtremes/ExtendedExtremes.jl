@@ -4,18 +4,19 @@
 """
 struct TNormal{T<:Real} <: ContinuousUnivariateDistribution
     κ::T
-    TNormal{T}(κ::T) where {T<:Real} = new{T}(κ)
-    end
 
-function TNormal(κ::T; check_args=true) where {T <: Real}
-    check_args && @check_args(TNormal, κ > 0)
-    return TNormal{T}(κ)
+    function TNormal{T}(κ::T) where {T<:Real}
+        κ > zero(κ) || throw(DomainError(κ, "TNormal: κ must be strictly positive."))
+
+        return new{T}(κ)
+    end
 end
 
 #### Outer constructors
 
-TNormal() = TNormal(1.0, check_args=false)
-TNormal(κ::Int) = TNormal(float(κ), check_args=false)
+TNormal(κ::T) where {T<:Real} = TNormal{T}(κ)
+TNormal() = TNormal(1.0)
+TNormal(κ::Int) = TNormal(float(κ))
 
 #### Parameters
 
