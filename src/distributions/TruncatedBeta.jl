@@ -4,18 +4,18 @@
 """
 struct TBeta{T<:Real} <: ContinuousUnivariateDistribution
     α::T
-    TBeta{T}(α::T) where {T<:Real} = new{T}(α)
-    end
 
-function TBeta(α::T; check_args=true) where {T <: Real}
-    check_args && @check_args(TBeta, α > 0 )
-    return TBeta{T}(α)
+    function TBeta{T}(α::T) where {T<:Real}
+        α > zero(α) || throw(DomainError(α, "TBeta: α must be strictly positive."))
+
+        return new{T}(α)
+    end
 end
 
 #### Outer constructors
 
-TBeta() = TBeta(1.0, check_args=false)
-TBeta(α::Int) = TBeta(float(α), check_args=false)
+TBeta() = TBeta(1.0)
+TBeta(α::Int) = TBeta(float(α))
 
 #### Parameters
 
