@@ -14,6 +14,7 @@ end
 
 #### Outer constructors
 
+TBeta(κ::T) where {T<:Real} = TBeta{T}(κ)
 TBeta() = TBeta(1.0)
 TBeta(α::Int) = TBeta(float(α))
 
