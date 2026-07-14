@@ -4,18 +4,18 @@
 """
 struct Power{T<:Real} <: ContinuousUnivariateDistribution
     κ::T
-    Power{T}(κ::T) where {T<:Real} = new{T}(κ)
-    end
 
-function Power(κ::T; check_args=true) where {T <: Real}
-    check_args && @check_args(Power, κ > 0)
-    return Power{T}(κ)
+    function Power{T}(κ::T) where {T<:Real}
+        κ > zero(κ) || throw(DomainError(κ, "Power: κ must be strictly positive."))
+        return new{T}(κ)
+    end
 end
 
 #### Outer constructors
 
-Power() = Power(1.0, check_args=false)
-Power(κ::Int) = Power(float(κ), check_args=false)
+Power(κ::T) where {T<:AbstractFloat} = Power{T}(κ)
+Power(κ::Integer) = Power(float(κ))
+Power() = Power(1.0)
 
 #### Parameters
 
