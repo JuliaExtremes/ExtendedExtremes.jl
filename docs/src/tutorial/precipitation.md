@@ -35,7 +35,7 @@ Several diagnostic plots for assessing the accuracy of the EGP model fitted to t
 
 ```@example rain
 set_default_plot_size(16cm, 16cm)
-ExtendedExtremes.diagnosticplots(fd, y)
+diagnosticplots(fd, y)
 ```
 
 The diagnostic plots consist in the probability plot (upper left panel), the quantile plot (upper right panel), the density plot (lower left panel) and the return level plot (lower right panel). These plots can be displayed separately using respectively the [`probplot`](@ref), [`qqplot`](@ref), [`histplot`](@ref) and [`returnlevelplot`](@ref) functions.
