@@ -1,6 +1,6 @@
 using Documenter, Extremes, ExtendedExtremes, Distributions, Gadfly,  Random, Cairo, Fontconfig
 
-makedocs(#modules = [ExtendedExtremes, Distributions, Random, Cairo, Fontconfig],
+makedocs(#modules = [ExtendedExtremes],
         doctest = false,
         sitename="ExtendedExtremes.jl",
         pages = [

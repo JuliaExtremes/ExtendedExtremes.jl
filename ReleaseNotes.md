@@ -2,7 +2,8 @@
 
 ## Nightly
 
-- Improve computation performance of `logpdf()` for the TBeta distribution. It is not relying anymore on `Truncated()` and `LocationScale()` by implementing directly the log-density.   
+- Improve computation performance of `logpdf()` for the TBeta distribution. It is not relying anymore on `Truncated()` and `LocationScale()` by implementing directly the log-density.
+- Remove the plot functions and add a dependency to ExtremePlots.jl   
 
 ## 0.3.2
 
