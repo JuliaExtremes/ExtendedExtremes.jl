@@ -16,7 +16,7 @@ The [`ExtendedGeneralizedPareto`](@ref) method is first illustrated using the [`
 
 
 ```@setup power
-using ExtendedExtremes, Distributions, Gadfly
+using ExtendedExtremes, Distributions, ExtremePlots, Gadfly
 ```
 
 ```@example power

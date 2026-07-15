@@ -3,9 +3,8 @@
 In this section, we show that the EGP model based on the truncated Beta distribution can be used to model non-zero precipitation, which corresponds to exceedances above the very low threshold of 0, while maintaining the tail behavior.
 
 ```@setup rain
-using Extremes, ExtendedExtremes, DataFrames, Dates, CSV, Distributions, Gadfly
+using ExtendedExtremes, ExtremePlots, DataFrames, Dates, CSV, Distributions, Gadfly
 ```
-
 
 
 ## Data
@@ -31,11 +30,11 @@ y = data.pcp[data.pcp .> u] .- u;
 fd = fit_mle(ExtendedGeneralizedPareto{TBeta}, y)
 ```
 
-Several diagnostic plots for assessing the accuracy of the EGP model fitted to the Montréal data are can be shown with the [`diagnosticplots`](@ref) function:
+Several diagnostic plots for assessing the accuracy of the EGP model fitted to the Montréal data are can be shown with the `ExtremePlots.diagnosticplots` function:
 
 ```@example rain
 set_default_plot_size(16cm, 16cm)
-ExtendedExtremes.diagnosticplots(y, fd)
+ExtremePlots.diagnosticplots(fd, y)
 ```
 
-The diagnostic plots consist in the probability plot (upper left panel), the quantile plot (upper right panel), the density plot (lower left panel) and the return level plot (lower right panel). These plots can be displayed separately using respectively the [`probplot`](@ref), [`qqplot`](@ref), [`histplot`](@ref) and [`returnlevelplot`](@ref) functions.
+The diagnostic plots consist in the probability plot (upper left panel), the quantile plot (upper right panel), the density plot (lower left panel) and the return level plot (lower right panel). These plots can be displayed separately using respectively the `ExtremePlots.probplot`, `ExtremePlots.qqplot`, `ExtremePlots.histplot` and `ExtremePlots.returnlevelplot` functions.

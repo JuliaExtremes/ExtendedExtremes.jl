@@ -2,7 +2,7 @@ module ExtendedExtremes
 
 using Distributions, CSV, DataFrames
 using Optim
-using Gadfly
+
 
 import Distributions.params
 import Distributions.scale
@@ -28,7 +28,6 @@ include("distributions/TruncatedNormal.jl");
 include("distributions/Power.jl");
 include("distributions/ExtendedGeneralizedPareto.jl");
 include("parameterestimation.jl");
-include("plots.jl");
 include("data.jl");
 
 export
