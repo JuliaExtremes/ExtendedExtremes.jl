@@ -38,11 +38,24 @@ function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real}, initi
     
 end
 
+"""
+    fit_mle(
+        ::Type{<:ExtendedGeneralizedPareto},
+        y::Vector{<:Real};
+        leftcensoring::Real = 0.0,
+    )
+
+Fit an extended generalized Pareto distribution to `y` by maximum
+likelihood.
+
+Observations less than or equal to `leftcensoring` are treated as
+left-censored.
+"""
 function fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y::Vector{<:Real} ; leftcensoring::Real=0.)
    
     initialvalues = [1.0, 1.0, 0.0]
     
-    return fit_mle(pd::Type{<:ExtendedGeneralizedPareto}, y, initialvalues; leftcensoring = leftcensoring)
+    return fit_mle(pd, y, initialvalues; leftcensoring = leftcensoring)
     
 end
 

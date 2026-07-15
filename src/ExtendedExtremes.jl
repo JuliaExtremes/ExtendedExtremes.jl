@@ -2,7 +2,6 @@ module ExtendedExtremes
 
 using Distributions, CSV, DataFrames
 using Optim
-using ExtremePlots
 
 
 import Distributions.params

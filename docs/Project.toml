@@ -1,5 +1,6 @@
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+Cairo = "159f3aea-2a34-519c-b102-8c37f9878175"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
@@ -7,4 +8,5 @@ ExtendedExtremes = "c3d6fec6-66cc-479b-b3f2-8ef84979700f"
 ExtremePlots = "96740c97-20d1-419e-bd96-765ff0b5546a"
 Fontconfig = "186bb1d3-e1f7-5a2c-a377-96d770f13627"
 Gadfly = "c91e804a-d5a3-530f-b6f0-dfbca275c004"
+Pango_jll = "36c8627f-9965-5494-a995-c6b170f724f3"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"

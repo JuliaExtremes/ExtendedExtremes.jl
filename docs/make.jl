@@ -1,6 +1,16 @@
-using Documenter, Extremes, ExtendedExtremes, Distributions, Gadfly,  Random, Cairo, Fontconfig
+using Documenter
+using ExtendedExtremes
+using ExtremePlots
 
-makedocs(#modules = [ExtendedExtremes],
+using Distributions
+using Random
+
+using Gadfly
+import Pango_jll
+import Cairo
+import Fontconfig
+
+makedocs(modules = [ExtendedExtremes],
         doctest = false,
         sitename="ExtendedExtremes.jl",
         pages = [
