@@ -1,3 +1,19 @@
+
+@testset "fit_mle" begin
+
+    y = deserialize("test/data/reference_vector.jls")
+
+    fd = fit_mle(ExtendedGeneralizedPareto{TBeta}, y)
+
+    @test shape(fd)[1] ≈ 0.8 rtol = .01
+    @test scale(fd)[1] ≈ 1. rtol = .01
+    @test tailindex(fd)[1] ≈ 0. atol = .015 
+
+end
+
+
+
+
 # @testset "parameterestimation" begin
 #     @testset "Model (i)" begin
 
